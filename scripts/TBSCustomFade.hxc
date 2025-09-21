@@ -1,0 +1,58 @@
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxG;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.ModStore;
+import funkin.ui.MusicBeatState;
+import funkin.ui.ScriptedMusicBeatSubState;
+
+class TBSCustomFade extends ScriptedMusicBeatSubState {
+    var isTransIn:Bool;
+    var transitionSprite:FunkinSprite;
+
+    function new(duration:Float, isTransIn:Bool, ?nextState:MusicBeatState) {
+        super();
+
+        this.isTransIn = isTransIn;
+
+        if (nextState != null) ModStore.stores.set("TBSNextState", nextState);
+
+        var width:Int = Std.int(FlxG.width);
+        var height:Int = Std.int(FlxG.height);
+
+        transitionSprite = new FunkinSprite(width + -1845, height + -1610);
+        transitionSprite.loadSparrow("kevin_normal");
+        transitionSprite.animation.addByPrefix("transition", "kevin_normal", 34, false);
+        transitionSprite.scrollFactor.set(0, 0);
+        add(transitionSprite);
+
+        if (isTransIn) {
+            transitionSprite.animation.play("transition", true, true, 28);
+            transitionSprite.animation.onFinish.add((anim) -> close());
+        } else {
+            transitionSprite.animation.play("transition", true);
+            transitionSprite.animation.onFinish.add((anim) -> handleStateSwitch());
+        }
+    }
+
+    function handleStateSwitch() {
+        var storedState:MusicBeatState = ModStore.get("TBSNextState");
+
+        if (storedState == FlxG.state) {
+            trace("Resetting current state");
+            ModStore.stores.remove("TBSNextState");
+            FlxG.resetState();
+        } else {
+            ModStore.stores.remove("TBSNextState");
+            FlxG.switchState(() -> storedState);
+        }
+    }
+
+    public static function switchState(nextState:MusicBeatState) {
+        if (!FlxTransitionableState.skipNextTransIn) {
+            FlxG.state.openSubState(new TBSCustomFade(0.6, false, nextState));
+            return;
+        }
+        FlxTransitionableState.skipNextTransIn = false;
+        FlxG.switchState(() -> nextState);
+    }
+}

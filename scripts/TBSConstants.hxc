@@ -1,0 +1,5 @@
+
+class TBSConstants {
+    public static var MENU_CHARS = ["credits", "freeplay", "options", "storymode"];
+    public static var DISCORD_LOGO  = "https://raw.githubusercontent.com/Starexify/The-Basement-Show-V-Slice/refs/heads/main/discord/logo.png?token=GHSAT0AAAAAADI6O4WQ3G7DNNGJA7UUIHOQ2GQFZWQ";
+}

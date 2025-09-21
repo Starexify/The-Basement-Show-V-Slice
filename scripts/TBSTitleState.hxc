@@ -1,4 +1,3 @@
-import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.tweens.FlxEase;
@@ -24,9 +23,6 @@ class TBSTitleState extends ScriptedMusicBeatState {
     override function create() {
         super.create();
 
-        FlxTransitionableState.skipNextTransIn = true;
-        FlxTransitionableState.skipNextTransOut = true;
-
         playMenuMusic();
 
         bg = FunkinSprite.create(0, 0, "titlescreen/modBanner");
@@ -48,8 +44,6 @@ class TBSTitleState extends ScriptedMusicBeatState {
 
         var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
 
-        if (pressedEnter && transitioning) moveToMainMenu();
-
         if (initialized && !transitioning && pressedEnter) {
             FlxG.camera.flash(FlxColor.WHITE, 1);
             FunkinSound.playOnce(Paths.sound("confirmMenuTBS"), 0.7);
@@ -58,7 +52,7 @@ class TBSTitleState extends ScriptedMusicBeatState {
             new FlxTimer().start(1, tmr -> moveToMainMenu());
         }
 
-        if (controls.BACK) FlxG.switchState(() -> new MainMenuState());
+        if (controls.BACK) TBSCustomFade.switchState(new MainMenuState());
 
         super.update(elapsed);
     }
@@ -71,7 +65,7 @@ class TBSTitleState extends ScriptedMusicBeatState {
 
     function moveToMainMenu() {
         FunkinMemory.purgeCache();
-        FlxG.switchState(() -> new TBSMainMenu());
+        TBSCustomFade.switchState(new TBSMainMenu());
     }
 
     function playMenuMusic() {
@@ -83,6 +77,6 @@ class TBSTitleState extends ScriptedMusicBeatState {
             restartTrack: false,
             persist: true
         });
-        if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 0.7);
+        if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
     }
 }

@@ -1,19 +1,57 @@
+import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
+import flixel.FlxState;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import funkin.api.discord.DiscordClient;
 import funkin.audio.FunkinSound;
 import funkin.Conductor;
 import funkin.graphics.FunkinSprite;
+import funkin.modding.ModStore;
+import funkin.Preferences;
+import funkin.ui.AtlasMenuItem;
+import funkin.ui.MenuTypedList;
+import funkin.ui.options.OptionsState;
 import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.story.StoryMenuState;
 import funkin.ui.UIState;
 import funkin.ui.UIStateMachine;
+import funkin.util.Constants;
 import funkin.util.WindowUtil;
+import Main;
+import openfl.filters.ShaderFilter;
+import StringTools;
 
 class TBSMainMenu extends ScriptedMusicBeatState {
+    var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
+
     var overrideMusic:Bool = false;
 
-    var uiStateMachine:UIStateMachine = new UIStateMachine();
-
     var bg:FunkinSprite;
+    var modLogo:FunkinSprite;
+    var menuChar:FunkinSprite;
+    var menuCreditTxt:FlxText;
+
+    var shaderVCR:MenusVCRShader;
+    var shaderGlow:MenusGlowShader;
+
+    var uiStateMachine:UIStateMachine = new UIStateMachine();
+    var menuEntries = [
+        { label: "storymode", path: "mainmenu/tbs/storymode", nextState: new StoryMenuState() },
+        { label: "freeplay", path: "mainmenu/tbs/freeplay", nextState: new TBSTitleState() },
+        { label: "credits", path: "mainmenu/tbs/credits", nextState: new TBSTitleState() },
+        { label: "options", path: "mainmenu/tbs/options", nextState: new OptionsState() }
+    ];
+
+    var rememberedSelectedIndex(get, set):Int;
+
+    function set_rememberedSelectedIndex(value:Int) { ModStore.stores.set("tbsRSI", value); }
+
+    function get_rememberedSelectedIndex():Int { return ModStore.get("tbsRSI"); }
 
     public function new() {
         super();
@@ -22,16 +60,102 @@ class TBSMainMenu extends ScriptedMusicBeatState {
     }
 
     override function create() {
-        super.create();
+        transIn = FlxTransitionableState.defaultTransIn;
+        transOut = FlxTransitionableState.defaultTransOut;
+
+        if (!overrideMusic) playMenuMusic();
 
         WindowUtil.setWindowTitle("The Basement Show - Main Menu");
-        DiscordClient.setPresence({state: "The Basement Show - Main Menu", details: null});
+        DiscordClient.setPresence({state: "In the Menus", details: null, largeImageKey: TBSConstants.DISCORD_LOGO});
 
-        bg = FunkinSprite.create(0, 0, "titlescreen/modBanner");
+        persistentUpdate = persistentDraw = true;
+
+        bg = FunkinSprite.create(-80, 0, "menuBG_TBS");
+        bg.setGraphicSize(Std.int(bg.width * 1.175));
+        bg.scrollFactor.set(0, 0);
+        bg.updateHitbox();
         bg.screenCenter();
         add(bg);
 
-        playMenuMusic();
+        menuChar = FunkinSprite.create(689, 55, "mainmenuchar/freeplay");
+        add(menuChar);
+
+        menuItems = new MenuTypedList();
+        add(menuItems);
+
+        menuItems.onChange.add(item -> {
+            for (sound in FunkinSound.pool) if (StringTools.contains(sound._label, "scrollMenu.ogg")) sound.stop();
+            FunkinSound.playOnce(Paths.sound("scrollMenuTBS"), 0.4);
+            set_rememberedSelectedIndex(item.ID);
+            menuChar.loadTexture('mainmenuchar/' + item.name);
+        });
+        menuItems.onAcceptPress.add(_ -> uiStateMachine.transition(UIState.Interacting));
+        menuItems.enabled = true;
+
+        var scale:Float = 2.5 / menuEntries.length;
+        var yOffset:Float = 108 - (Math.max(menuEntries.length, 4) - 4) * 80;
+        for (i in 0...menuEntries.length) {
+            var entry = menuEntries[i];
+            createMenuItem(30, (i * 140) + yOffset, entry.label, entry.path, () -> selectItem(entry.nextState), scale);
+        }
+
+        menuItems.selectItem(rememberedSelectedIndex);
+
+        modLogo = FunkinSprite.create(950, 20, 'mainmenu/TBSLogo');
+        modLogo.scale.set(0.4, 0.4);
+        modLogo.scrollFactor.set(0, 0);
+        modLogo.antialiasing = true;
+        modLogo.updateHitbox();
+        add(modLogo);
+
+        menuCreditTxt = new FlxText(0, 0, 0, "Now Playing: Main Theme\nBy 75_7", 8);
+        menuCreditTxt.setFormat(Paths.font("tbs.ttf"), 24, FlxColor.WHITE, "LEFT", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        menuCreditTxt.alpha = 0;
+        menuCreditTxt.scrollFactor.set();
+        add(menuCreditTxt);
+
+        // Tween both Menu Theme credit and Debug Display cuz fancy
+        FlxTween.tween(menuCreditTxt, {alpha: 1}, 1.5, {
+            ease: FlxEase.quadInOut,
+            startDelay: 1,
+            onComplete: twn -> FlxTween.tween(menuCreditTxt, {alpha: 0}, 1.5, {ease: FlxEase.quadInOut, startDelay: 2})
+        });
+        FlxTween.tween(Main.debugDisplay, {alpha: 0}, 1.5, {
+            ease: FlxEase.quadInOut,
+            startDelay: 1,
+            onComplete: twn -> FlxTween.tween(Main.debugDisplay, {alpha: Preferences.debugDisplayBGOpacity}, 1.5 * Preferences.debugDisplayBGOpacity, {ease: FlxEase.quadInOut, startDelay: 2})
+        });
+
+        shaderGlow = new MenusGlowShader();
+        shaderGlow.setFloat("size", 16.0);
+        shaderGlow.setFloat("dim", 2.0);
+        shaderVCR = new MenusVCRShader();
+        if (FlxG.camera.filters != null) {
+            FlxG.camera.filters.push(new ShaderFilter(shaderGlow));
+            FlxG.camera.filters.push(new ShaderFilter(shaderVCR));
+        }
+        else FlxG.camera.filters = [new ShaderFilter(shaderGlow), new ShaderFilter(shaderVCR)];
+
+        super.create();
+
+        if (!FlxTransitionableState.skipNextTransOut) openSubState(new TBSCustomFade(0.7, true));
+
+        initLeftWatermarkText();
+    }
+
+    function initLeftWatermarkText() {
+        if (leftWatermarkText == null) return;
+        leftWatermarkText.text = "The Basement Show [Unofficial V-Slice Port] v2.6" + "\nFriday Night Funkin' " + Constants.VERSION;
+        leftWatermarkText.setPosition(12, FlxG.height - 48);
+        leftWatermarkText.setFormat(Paths.font("tbs.ttf"), 16, FlxColor.WHITE, "LEFT", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    }
+
+    override public function beatHit():Bool {
+        if (!super.beatHit()) return false;
+        FlxTween.tween(menuChar, {y: 85}, 0.3, {ease: FlxEase.quadOut, type: 16});
+        FlxTween.tween(menuChar.scale, {y: 0.9}, 0.3, {ease: FlxEase.quadOut, type: 16});
+        FlxTween.tween(modLogo.scale, {y: 0.45, x: 0.45}, 0.3, {ease: FlxEase.quadOut, type: 16});
+        return true;
     }
 
     override function update(elapsed:Float) {
@@ -40,18 +164,61 @@ class TBSMainMenu extends ScriptedMusicBeatState {
 
         if (controls.BACK) {
             FlxG.sound.play(Paths.sound("cancelMenuTBS"));
-            FlxG.switchState(new TBSTitleState());
+            TBSCustomFade.switchState(new TBSTitleState());
         }
     }
 
+    function createMenuItem(x, y, name:String, atlas:String, callback:Void -> Void, ?scale:Float, ?fireInstantly:Bool) {
+        if (menuItems == null) return;
+        fireInstantly = fireInstantly ?? true;
+        scale = scale ?? 1;
+        var item:AtlasMenuItem = new AtlasMenuItem(x, y, name, Paths.getSparrowAtlas(atlas), callback);
+        item.scale.set(scale, scale);
+        item.fireInstantly = fireInstantly;
+        item.ID = menuItems.length;
+        item.scrollFactor.set();
+
+        // Set the offset of the item so the sprite is centered on the origin.
+        item.changeAnim("idle");
+        menuItems.addItem(name, item);
+    }
+
+    function selectItem(nextState:FlxState) {
+        FlxG.sound.play(Paths.sound("confirmMenuTBS"));
+        var persNextState = nextState;
+
+        for (entry in menuItems.members) {
+            if (entry == null) continue;
+
+            if (entry != menuItems.selectedItem) {
+                FlxTween.tween(entry, {alpha: 0}, 0.4, {
+                    ease: FlxEase.quadOut,
+                    onComplete: twn -> entry.kill()
+                });
+            } else {
+                FlxTween.tween(FlxG.camera, {zoom: 2}, 0.5, {ease: FlxEase.quadOut});
+                FlxTween.tween(menuChar, {alpha: 0}, 0.5, {ease: FlxEase.circOut});
+                FlxTween.tween(menuItems.selectedItem, {x: 400, y: 300}, 0.5, {ease: FlxEase.quadInOut});
+                new FlxTimer().start(0.5, _ -> {
+                    TBSCustomFade.switchState(persNextState);
+                });
+            }
+        }
+    }
 
     function playMenuMusic() {
         FunkinSound.playMusic("basementMenu",
         {
-            startingVolume: 0.0,
+            startingVolume: 1.0,
             overrideExisting: true,
             restartTrack: false,
             persist: true
         });
+    }
+
+    public override function destroy() {
+        Main.debugDisplay.alpha = Preferences.debugDisplayBGOpacity;
+        shaderVCR = shaderGlow = null;
+        super.destroy();
     }
 }
