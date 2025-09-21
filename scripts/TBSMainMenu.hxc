@@ -1,0 +1,47 @@
+import flixel.FlxG;
+import funkin.audio.FunkinSound;
+import funkin.Conductor;
+import funkin.graphics.FunkinSprite;
+import funkin.ui.ScriptedMusicBeatState;
+import funkin.util.WindowUtil.WindowUtil.setWindowTitle;
+import funkin.util.WindowUtil;
+import funkin.api.discord.DiscordClient;
+
+class TBSMainMenu extends ScriptedMusicBeatState {
+
+    var bg:FunkinSprite;
+
+    override function create() {
+        super.create();
+
+        WindowUtil.setWindowTitle("The Basement Show - Main Menu");
+        DiscordClient.setPresence({state:"The Basement Show - Main Menu"});
+
+        bg = FunkinSprite.create(0, 0, "titlescreen/modBanner");
+        bg.screenCenter();
+        add(bg);
+
+        playMenuMusic();
+    }
+
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+        Conductor.instance.update();
+
+        if (controls.BACK) {
+            FlxG.sound.play(Paths.sound("cancelMenuTBS"));
+            FlxG.switchState(new TBSTitleState());
+        }
+    }
+
+
+    function playMenuMusic() {
+        FunkinSound.playMusic("basementMenu",
+        {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: false,
+            persist: true
+        });
+    }
+}

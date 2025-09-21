@@ -1,0 +1,37 @@
+import flixel.FlxG;
+import funkin.api.discord.DiscordClient;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ScriptedModule;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.util.WindowUtil;
+import lime.app.Application;
+import lime.graphics.Image;
+
+class TBSMain extends ScriptedModule {
+
+    override public function onUpdate(event:UpdateScriptEvent) {
+        if (FlxG.keys.justPressed.TAB && (FlxG.state is MainMenuState)) {
+            openTBSTitleScreen();
+        }
+    }
+
+    override public function onStateCreate(event:ScriptEvent) {
+        if (FlxG.state is MainMenuState) {
+            DiscordClient.setPresence({state: "In the Menus", details: null});
+            WindowUtil.setWindowTitle("Friday Night Funkin'");
+            setIcon("FNF");
+        }
+    }
+
+    function openTBSTitleScreen() {
+        setIcon("TBS");
+        DiscordClient.setPresence({state: "The Basement Show", details: null});
+        WindowUtil.setWindowTitle("The Basement Show");
+        FlxG.switchState(new TBSTitleState());
+    }
+
+    function setIcon(key:String) {
+        var icon = Image.fromBytes(Assets.getBytes(Paths.image(key)));
+        Application.current.window.setIcon(icon);
+    }
+}

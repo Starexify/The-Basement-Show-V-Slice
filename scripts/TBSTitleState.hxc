@@ -1,0 +1,79 @@
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.audio.FunkinSound;
+import funkin.Conductor;
+import funkin.FunkinMemory;
+import funkin.graphics.FunkinSprite;
+import funkin.ui.ScriptedMusicBeatState;
+import StringTools;
+
+class TBSTitleState extends ScriptedMusicBeatState {
+    public static var initialized:Bool = false;
+    var transitioning:Bool = false;
+
+    var bg:FunkinSprite;
+    var modLogo:FlxSprite;
+
+    override function create() {
+        super.create();
+
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+
+        playMenuMusic();
+
+        bg = FunkinSprite.create(0, 0, "titlescreen/modBanner");
+        bg.screenCenter();
+        add(bg);
+
+        modLogo = FunkinSprite.create(255, 300, "titlescreen/TBSLogoBlank");
+        modLogo.scale.set(0.8, 0.8);
+        modLogo.scrollFactor.set();
+        modLogo.antialiasing = true;
+        add(modLogo);
+
+        initialized = true;
+    }
+
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+        Conductor.instance.update();
+
+        var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+        if (initialized && !transitioning && pressedEnter) {
+            FlxG.camera.flash(FlxColor.WHITE, 1);
+            FunkinSound.playOnce(Paths.sound("confirmMenuTBS"), 0.7);
+            transitioning = true;
+
+            new FlxTimer().start(1, tmr -> moveToMainMenu());
+        }
+    }
+
+    override public function beatHit():Bool {
+        if (!super.beatHit()) return false;
+        if (initialized) FlxTween.tween(modLogo.scale, {y: 0.9, x: 0.9}, 0.3, {ease: FlxEase.quadOut, type: 16});
+        return true;
+    }
+
+    function moveToMainMenu() {
+        FunkinMemory.purgeCache();
+        FlxG.switchState(() -> new TBSMainMenu());
+    }
+
+    function playMenuMusic() {
+        var shouldFadeIn:Bool = !StringTools.contains(FlxG.sound.music._label, "basementMenu");
+        FunkinSound.playMusic("basementMenu",
+        {
+            startingVolume: 0.0,
+            overrideExisting: true,
+            restartTrack: false,
+            persist: true
+        });
+        if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 0.7);
+    }
+}
