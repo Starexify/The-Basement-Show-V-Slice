@@ -10,9 +10,7 @@ import lime.graphics.Image;
 class TBSMain extends ScriptedModule {
 
     override public function onUpdate(event:UpdateScriptEvent) {
-        if (FlxG.keys.justPressed.TAB && (FlxG.state is MainMenuState)) {
-            openTBSTitleScreen();
-        }
+        if (FlxG.keys.justPressed.TAB && (FlxG.state is MainMenuState)) openTBSTitleScreen();
     }
 
     override public function onStateCreate(event:ScriptEvent) {

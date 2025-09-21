@@ -1,21 +1,31 @@
 import flixel.FlxG;
+import funkin.api.discord.DiscordClient;
 import funkin.audio.FunkinSound;
 import funkin.Conductor;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.ScriptedMusicBeatState;
-import funkin.util.WindowUtil.WindowUtil.setWindowTitle;
+import funkin.ui.UIState;
+import funkin.ui.UIStateMachine;
 import funkin.util.WindowUtil;
-import funkin.api.discord.DiscordClient;
 
 class TBSMainMenu extends ScriptedMusicBeatState {
+    var overrideMusic:Bool = false;
+
+    var uiStateMachine:UIStateMachine = new UIStateMachine();
 
     var bg:FunkinSprite;
+
+    public function new() {
+        super();
+
+        uiStateMachine.transition(UIState.Entering);
+    }
 
     override function create() {
         super.create();
 
         WindowUtil.setWindowTitle("The Basement Show - Main Menu");
-        DiscordClient.setPresence({state:"The Basement Show - Main Menu"});
+        DiscordClient.setPresence({state: "The Basement Show - Main Menu", details: null});
 
         bg = FunkinSprite.create(0, 0, "titlescreen/modBanner");
         bg.screenCenter();

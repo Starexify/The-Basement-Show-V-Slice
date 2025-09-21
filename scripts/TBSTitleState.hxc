@@ -9,6 +9,8 @@ import funkin.audio.FunkinSound;
 import funkin.Conductor;
 import funkin.FunkinMemory;
 import funkin.graphics.FunkinSprite;
+import funkin.input.Cursor;
+import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.ScriptedMusicBeatState;
 import StringTools;
 
@@ -41,10 +43,13 @@ class TBSTitleState extends ScriptedMusicBeatState {
     }
 
     override function update(elapsed:Float) {
-        super.update(elapsed);
         Conductor.instance.update();
+        Cursor.hide();
 
         var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+
+        if (pressedEnter && transitioning) moveToMainMenu();
+
         if (initialized && !transitioning && pressedEnter) {
             FlxG.camera.flash(FlxColor.WHITE, 1);
             FunkinSound.playOnce(Paths.sound("confirmMenuTBS"), 0.7);
@@ -52,6 +57,10 @@ class TBSTitleState extends ScriptedMusicBeatState {
 
             new FlxTimer().start(1, tmr -> moveToMainMenu());
         }
+
+        if (controls.BACK) FlxG.switchState(() -> new MainMenuState());
+
+        super.update(elapsed);
     }
 
     override public function beatHit():Bool {
