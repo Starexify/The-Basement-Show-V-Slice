@@ -54,6 +54,13 @@ class TBSHud extends ScriptedModule {
         }
     }
 
+    override public function onSongRetry(event:SongRetryEvent) {
+        for (cam in FlxG.cameras.list) {
+            if (cam.filters != null) cam.filters = [];
+            else cam.filters = [];
+        }
+    }
+
     override public function onUpdate(event:UpdateScriptEvent) {
         if (PlayState.instance == null || tvShader == null) return;
         tvShader.update(event.elapsed);

@@ -138,7 +138,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
 
         super.create();
 
-        if (!FlxTransitionableState.skipNextTransOut) openSubState(new TBSCustomFade(0.7, true));
+        openSubState(new TBSCustomFade(0.7, true));
 
         initLeftWatermarkText();
     }

@@ -77,6 +77,9 @@ class TBSMain extends ScriptedModule {
 
     override public function onStateChangeEnd(event:StateChangeScriptEvent) {
         if (!(event.targetState is StoryMenuState) || !inTBSMenu()) return;
+        DiscordClient.setPresence({state: "In the Menus", details: null, largeImageKey: TBSConstants.DISCORD_LOGO});
+        WindowUtil.setWindowTitle("The Basement Show");
+
         var storyMenu:StoryMenuState = event.targetState;
         var diff = storyMenu.levelList.indexOf("week1-tbs") - storyMenu.levelList.indexOf(storyMenu.currentLevelId);
         storyMenu.changeLevel(diff);
