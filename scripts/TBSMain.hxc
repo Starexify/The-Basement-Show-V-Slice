@@ -15,24 +15,34 @@ import openfl.filters.ShaderFilter;
 import StringTools;
 
 class TBSMain extends ScriptedModule {
-    var prevState:Bool = false;
-
     var shaderVCR:MenusVCRShader;
     var shaderGlow:MenusGlowShader;
+    var prevStoryId:String;
 
     var applied:Bool = false;
     static var targetDiff:String = "normal";
-    static var targetWeeks:Array<String> = ["week1-tbs", "week2-tbs", "week3-tbs", "week4-tbs", "week5-tbs", "week6-tbs",];
+    static var targetWeeks:Array<String> = ["week1-tbs", "week2-tbs", "week3-tbs", "week4-tbs", "week5-tbs", "week6-tbs"];
 
     public static function setInTBSMenu(value:Bool) { ModStore.stores.set("inTBSMenu", value); }
-
     public static function inTBSMenu():Bool { return ModStore.get("inTBSMenu"); }
+
+    public static function setInTBSState(value:Bool) { ModStore.stores.set("inTBSState", value); }
+    public static function inTBSState():Bool { return ModStore.get("inTBSState"); }
+
+    override public function onCreate(event:ScriptEvent) {
+        for (char in TBSConstants.STORY_CHARS) FunkinMemory.cacheTexture(Paths.image("storymenu/props/" + char));
+        setInTBSState(false);
+    }
 
     override public function onUpdate(event:UpdateScriptEvent) {
         if (FlxG.keys.justPressed.TAB && (FlxG.state is MainMenuState)) openTBSTitleScreen();
 
         if (!(FlxG.state is StoryMenuState)) return;
         var storyMenu:StoryMenuState = FlxG.state;
+        if (prevStoryId != storyMenu.currentLevelId) {
+            storyMenu.levelBackground.screenCenter(0x01);
+            prevStoryId = storyMenu.currentLevelId;
+        }
         if (targetWeeks.contains(storyMenu.currentLevelId) && storyMenu.currentDifficultyId != targetDiff) {
             applied = false;
             for (sound in FunkinSound.pool) if (StringTools.contains(sound._label, "scrollMenu.ogg")) sound.stop();
@@ -47,11 +57,10 @@ class TBSMain extends ScriptedModule {
 
     override public function onStateCreate(event:ScriptEvent) {
         if (!(FlxG.state is MainMenuState) || !inTBSMenu()) return;
-        if (prevState) {
+        if (inTBSState()) {
             FlxG.switchState(new TBSMainMenu());
-            prevState = false;
-        }
-        else {
+            setInTBSState(false);
+        } else {
             DiscordClient.setPresence({state: "In the Menus", details: null});
             WindowUtil.setWindowTitle("Friday Night Funkin'");
             setIcon("FNF");
@@ -62,8 +71,8 @@ class TBSMain extends ScriptedModule {
     override public function onStateChangeBegin(event:StateChangeScriptEvent) {
         if (!inTBSMenu()) return;
         if (!(FlxG.state is StoryMenuState) && !(FlxG.state is OptionsState)) return;
-        trace(prevState);
-        prevState = true;
+        WindowUtil.setWindowTitle("The Basement Show");
+        setInTBSState(true);
     }
 
     override public function onStateChangeEnd(event:StateChangeScriptEvent) {
@@ -106,5 +115,10 @@ class TBSMain extends ScriptedModule {
     function setIcon(key:String) {
         var icon = Image.fromBytes(Assets.getBytes(Paths.image(key)));
         Application.current.window.setIcon(icon);
+    }
+
+    override public function onDestroy(event:ScriptEvent) {
+        if (shaderGlow != null) shaderGlow = null;
+        if (shaderVCR != null) shaderVCR = null;
     }
 }

@@ -1,0 +1,48 @@
+{
+  "version": "1.0.0",
+  "name": "Mouse",
+  "assetPath": "characters/Basement Mouse PH1",
+  "singTime": 4.5,
+  "healthIcon": {
+    "id": "mouse-p1"
+  },
+  "healthColor": [170, 95, 25],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "I0",
+      "offsets": [-52, 0],
+      "frameRate": 16
+    },
+    {
+      "name": "angry",
+      "prefix": "A0",
+      "offsets": [168, 0],
+      "frameRate": 14
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "L0",
+      "offsets": [-8, 0],
+      "frameRate": 16
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "D0",
+      "offsets": [0, 1],
+      "frameRate": 16
+    },
+    {
+      "name": "singUP",
+      "prefix": "U0",
+      "offsets": [7, 7],
+      "frameRate": 16
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "R0",
+      "frameRate": 16,
+      "offsets": [11, 5]
+    }
+  ]
+}

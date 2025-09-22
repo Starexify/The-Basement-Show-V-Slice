@@ -1,9 +1,0 @@
-import funkin.modding.base.ScriptedFlxRuntimeShader;
-
-class MenusGlowShader extends ScriptedFlxRuntimeShader {
-    public function new() {
-        super(Assets.getText(Paths.frag("MenuGlow")));
-        setFloat("dim", 2.0);
-        setFloat("size", 8.0);
-    }
-}

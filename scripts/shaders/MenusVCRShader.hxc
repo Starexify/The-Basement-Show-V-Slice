@@ -1,0 +1,7 @@
+import funkin.modding.base.ScriptedFlxRuntimeShader;
+
+class MenusVCRShader extends ScriptedFlxRuntimeShader {
+    public function new() {
+        super(Assets.getText(Paths.frag("MenuVCR")));
+    }
+}

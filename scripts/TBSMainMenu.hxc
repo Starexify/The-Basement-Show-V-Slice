@@ -85,7 +85,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
 
         menuItems.onChange.add(item -> {
             for (sound in FunkinSound.pool) if (StringTools.contains(sound._label, "scrollMenu.ogg")) sound.stop();
-            FunkinSound.playOnce(Paths.sound("scrollMenuTBS"), 0.4);
+            FunkinSound.playOnce(Paths.sound("scrollMenuTBS"));
             set_rememberedSelectedIndex(item.ID);
             menuChar.loadTexture('mainmenuchar/' + item.name);
         });
@@ -145,7 +145,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
 
     function initLeftWatermarkText() {
         if (leftWatermarkText == null) return;
-        leftWatermarkText.text = "The Basement Show [Unofficial V-Slice Port] v2.6" + "\nFriday Night Funkin' " + Constants.VERSION;
+        leftWatermarkText.text = "The Basement Show v2.6 [Unofficial V-Slice Port]" + "\nFriday Night Funkin' " + Constants.VERSION;
         leftWatermarkText.setPosition(12, FlxG.height - 48);
         leftWatermarkText.setFormat(Paths.font("tbs.ttf"), 16, FlxColor.WHITE, "LEFT", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     }
@@ -163,7 +163,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
         Conductor.instance.update();
 
         if (controls.BACK) {
-            FlxG.sound.play(Paths.sound("cancelMenuTBS"));
+            FunkinSound.playOnce(Paths.sound("cancelMenuTBS"));
             TBSCustomFade.switchState(new TBSTitleState());
         }
     }

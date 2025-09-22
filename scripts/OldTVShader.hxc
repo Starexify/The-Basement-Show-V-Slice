@@ -1,0 +1,15 @@
+import funkin.modding.base.ScriptedFlxRuntimeShader;
+
+class OldTVShader extends ScriptedFlxRuntimeShader {
+    public function new() {
+        super(Assets.getText(Paths.frag("OldTVShader")));
+
+        setFloat("iTime", 1.0);
+        setFloat("blueOpac", 1.3);
+    }
+
+    public function update(elapsed:Float) {
+        var currentTime = getFloat("iTime");
+        setFloat("iTime", currentTime + elapsed);
+    }
+}

@@ -1,0 +1,80 @@
+{
+  "version": "1.0.0",
+  "name": "Boyfriend (TBS)",
+  "assetPath": "characters/BF-ALT",
+  "singTime": 4,
+  "flipX": true,
+  "scale": 0.8,
+  "healthIcon": {
+    "id": "bf-tbs"
+  },
+  "healthColor": [81, 128, 234],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "BF idle dance",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "BF NOTE LEFT0",
+      "offsets": [-8, 45]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "BF NOTE DOWN0",
+      "offsets": [0, 43]
+    },
+    {
+      "name": "singUP",
+      "prefix": "BF NOTE UP0",
+      "offsets": [-54, 81]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "BF NOTE RIGHT0",
+      "offsets": [1, 88]
+    },
+    {
+      "name": "singLEFTmiss",
+      "prefix": "BF NOTE LEFT MISS",
+      "offsets": [-8, 45]
+    },
+    {
+      "name": "singDOWNmiss",
+      "prefix": "BF NOTE DOWN MISS",
+      "offsets": [0, 43]
+    },
+    {
+      "name": "singUPmiss",
+      "prefix": "BF NOTE UP MISS",
+      "offsets": [-54, 81]
+    },
+    {
+      "name": "singRIGHTmiss",
+      "prefix": "BF NOTE RIGHT MISS",
+      "offsets": [1, 88]
+    },
+    {
+      "name": "firstDeath",
+      "prefix": "BF dies",
+      "offsets": [-3, 21]
+    },
+    {
+      "name": "deathLoop",
+      "prefix": "BF die loop",
+      "looped": true,
+      "offsets": [-3, 21]
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "BF retry confirm",
+      "offsets": [-3, 21]
+    },
+    {
+      "name": "dodge",
+      "prefix": "boyfriend dodge",
+      "offsets": [10, 34]
+    }
+  ]
+}

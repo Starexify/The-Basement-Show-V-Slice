@@ -1,0 +1,65 @@
+import flixel.FlxG;
+import flixel.util.FlxColor;
+import funkin.FunkinMemory;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ScriptedModule;
+import funkin.play.PlayState;
+import funkin.util.WindowUtil;
+import openfl.filters.ShaderFilter;
+
+class TBSHud extends ScriptedModule {
+    public static var SONG_LIST:Array<String> = ["house-for-sale"];
+
+    var tvShader:OldTVShader;
+
+    override public function onCreate(event:ScriptEvent) {
+        FunkinMemory.cacheTexture(Paths.image("healthbarTBS"));
+    }
+
+    override public function onSongLoaded(event:SongLoadScriptEvent) {
+        if (PlayState.instance == null) return;
+        var playState = PlayState.instance;
+        if (!SONG_LIST.contains(playState.currentSong.id)) return;
+
+        WindowUtil.setWindowTitle("The Basement Show - Now Playing: " + playState.currentSong.songName + " - By: " + playState.currentSong.songArtist);
+
+        // Changed Health Bar texture and stuff
+        playState.healthBarBG.loadTexture("healthbarTBS");
+        playState.healthBarBG.scale.set(0.418, 0.4);
+        playState.healthBarBG.x = playState.healthBar.x - 522;
+        playState.healthBarBG.y = playState.healthBar.y - 560;
+        playState.healthBarBG.zIndex = playState.healthBar.zIndex + 1;
+
+        playState.healthBar.y += 8;
+        playState.healthBar.scale.y = 1.8;
+
+        playState.scoreText.y += 26;
+        playState.scoreText.font = Paths.font("TBS.ttf");
+
+        playState.refresh();
+        var bfHealthColor = playState.currentStage.characters.get("bf")._data?.healthColor;
+        var oppHealthColor = playState.currentStage.characters.get("dad")._data?.healthColor;
+        playState.healthBar.createFilledBar(
+            FlxColor.fromRGB(oppHealthColor[0], oppHealthColor[1], oppHealthColor[2]),
+            FlxColor.fromRGB(bfHealthColor[0], bfHealthColor[1], bfHealthColor[2])
+        );
+
+        // Applying Shaders
+        tvShader = new OldTVShader();
+        //tvShader.setFloat("blueOpac", 1.3);
+        tvShader.setFloat("blueOpac", 0);
+        for (cam in FlxG.cameras.list) {
+            if (cam.filters != null) cam.filters.push(new ShaderFilter(tvShader));
+            else cam.filters = [new ShaderFilter(tvShader)];
+        }
+    }
+
+    override public function onUpdate(event:UpdateScriptEvent) {
+        if (PlayState.instance == null || tvShader == null) return;
+        tvShader.update(event.elapsed);
+    }
+
+    override public function onDestroy(event:ScriptEvent) {
+        if (tvShader != null) tvShader = null;
+    }
+}
