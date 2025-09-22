@@ -1,11 +1,11 @@
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxG;
 import funkin.graphics.FunkinSprite;
+import funkin.modding.base.ScriptedFlxSubState;
 import funkin.modding.ModStore;
 import funkin.ui.MusicBeatState;
-import funkin.ui.ScriptedMusicBeatSubState;
 
-class TBSCustomFade extends ScriptedMusicBeatSubState {
+class TBSCustomFade extends ScriptedFlxSubState {
     var isTransIn:Bool;
     var transitionSprite:FunkinSprite;
 
@@ -35,13 +35,9 @@ class TBSCustomFade extends ScriptedMusicBeatSubState {
 
     function handleStateSwitch() {
         var storedState:MusicBeatState = ModStore.get("TBSNextState");
-
-        if (storedState == FlxG.state) {
-            trace("Resetting current state");
+        if (storedState != null) {
             ModStore.stores.remove("TBSNextState");
-            FlxG.resetState();
-        } else {
-            ModStore.stores.remove("TBSNextState");
+            close();
             FlxG.switchState(() -> storedState);
         }
     }

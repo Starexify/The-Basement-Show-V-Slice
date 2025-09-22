@@ -31,6 +31,11 @@ class TBSMainMenu extends ScriptedMusicBeatState {
 
     var overrideMusic:Bool = false;
 
+    var canInteract(get, never):Bool;
+    function get_canInteract():Bool {
+        return uiStateMachine.canInteract();
+    }
+
     var bg:FunkinSprite;
     var modLogo:FunkinSprite;
     var menuChar:FunkinSprite;
@@ -47,17 +52,8 @@ class TBSMainMenu extends ScriptedMusicBeatState {
         { label: "options", path: "mainmenu/tbs/options", nextState: new OptionsState() }
     ];
 
-    var rememberedSelectedIndex(get, set):Int;
-
-    function set_rememberedSelectedIndex(value:Int) { ModStore.stores.set("tbsRSI", value); }
-
-    function get_rememberedSelectedIndex():Int { return ModStore.get("tbsRSI"); }
-
-    public function new() {
-        super();
-
-        uiStateMachine.transition(UIState.Entering);
-    }
+    function setRememberedSelectedIndex(value:Int) { ModStore.stores.set("tbsRSI", value); }
+    function getRememberedSelectedIndex():Int { return ModStore.get("tbsRSI"); }
 
     override function create() {
         transIn = FlxTransitionableState.defaultTransIn;
@@ -86,7 +82,6 @@ class TBSMainMenu extends ScriptedMusicBeatState {
         menuItems.onChange.add(item -> {
             for (sound in FunkinSound.pool) if (StringTools.contains(sound._label, "scrollMenu.ogg")) sound.stop();
             FunkinSound.playOnce(Paths.sound("scrollMenuTBS"));
-            set_rememberedSelectedIndex(item.ID);
             menuChar.loadTexture('mainmenuchar/' + item.name);
         });
         menuItems.onAcceptPress.add(_ -> uiStateMachine.transition(UIState.Interacting));
@@ -99,7 +94,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
             createMenuItem(30, (i * 140) + yOffset, entry.label, entry.path, () -> selectItem(entry.nextState), scale);
         }
 
-        menuItems.selectItem(rememberedSelectedIndex);
+        menuItems.selectItem(getRememberedSelectedIndex());
 
         modLogo = FunkinSprite.create(950, 20, 'mainmenu/TBSLogo');
         modLogo.scale.set(0.4, 0.4);
@@ -137,7 +132,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
         else FlxG.camera.filters = [new ShaderFilter(shaderGlow), new ShaderFilter(shaderVCR)];
 
         super.create();
-
+        uiStateMachine.transition(UIState.Entering);
         openSubState(new TBSCustomFade(0.7, true));
 
         initLeftWatermarkText();
@@ -148,24 +143,6 @@ class TBSMainMenu extends ScriptedMusicBeatState {
         leftWatermarkText.text = "The Basement Show v2.6 [Unofficial V-Slice Port]" + "\nFriday Night Funkin' " + Constants.VERSION;
         leftWatermarkText.setPosition(12, FlxG.height - 48);
         leftWatermarkText.setFormat(Paths.font("tbs.ttf"), 16, FlxColor.WHITE, "LEFT", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-    }
-
-    override public function beatHit():Bool {
-        if (!super.beatHit()) return false;
-        FlxTween.tween(menuChar, {y: 85}, 0.3, {ease: FlxEase.quadOut, type: 16});
-        FlxTween.tween(menuChar.scale, {y: 0.9}, 0.3, {ease: FlxEase.quadOut, type: 16});
-        FlxTween.tween(modLogo.scale, {y: 0.45, x: 0.45}, 0.3, {ease: FlxEase.quadOut, type: 16});
-        return true;
-    }
-
-    override function update(elapsed:Float) {
-        super.update(elapsed);
-        Conductor.instance.update();
-
-        if (controls.BACK) {
-            FunkinSound.playOnce(Paths.sound("cancelMenuTBS"));
-            TBSCustomFade.switchState(new TBSTitleState());
-        }
     }
 
     function createMenuItem(x, y, name:String, atlas:String, callback:Void -> Void, ?scale:Float, ?fireInstantly:Bool) {
@@ -216,7 +193,38 @@ class TBSMainMenu extends ScriptedMusicBeatState {
         });
     }
 
+    override public function beatHit():Bool {
+        if (!super.beatHit()) return false;
+        FlxTween.tween(menuChar, {y: 85}, 0.3, {ease: FlxEase.quadOut, type: 16});
+        FlxTween.tween(menuChar.scale, {y: 0.9}, 0.3, {ease: FlxEase.quadOut, type: 16});
+        FlxTween.tween(modLogo.scale, {y: 0.45, x: 0.45}, 0.3, {ease: FlxEase.quadOut, type: 16});
+        return true;
+    }
+
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+        Conductor.instance.update();
+
+        handleInputs();
+
+        if (menuItems != null) menuItems.busy = !canInteract;
+    }
+
+    function handleInputs() {
+        if (!canInteract) return;
+        if (controls.BACK) goBack();
+    }
+
+    function goBack() {
+        uiStateMachine.transition(UIState.Exiting);
+        setRememberedSelectedIndex(menuItems?.selectedIndex ?? 0);
+        FunkinSound.playOnce(Paths.sound("cancelMenuTBS"));
+
+        TBSCustomFade.switchState(new TBSTitleState());
+    }
+
     public override function destroy() {
+        setRememberedSelectedIndex(menuItems?.selectedIndex ?? 0);
         Main.debugDisplay.alpha = Preferences.debugDisplayBGOpacity;
         shaderVCR = shaderGlow = null;
         super.destroy();
