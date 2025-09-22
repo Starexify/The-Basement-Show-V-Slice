@@ -144,57 +144,57 @@
       "isPixel": false
     },
     "judgementShit": {
-      "assetPath": "default:ui/popup/basement/shit",
+      "assetPath": "default:ui/popup/basement/none",
       "scale": 0.65,
       "isPixel": false
     },
     "comboNumber0": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber1": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber2": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber3": {
-      "assetPath":null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber4": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber5": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber6": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber7": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber8": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber9": {
-      "assetPath": null,
+      "assetPath": "default:ui/popup/basement/none",
       "isPixel": false,
       "scale": 0.45
     }

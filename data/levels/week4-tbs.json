@@ -7,16 +7,15 @@
       "assetPath": "storymenu/props/WB45",
       "scale": 0.35,
       "offsets": [380, 230],
+      "danceEvery": 1.5,
       "animations": [
         {
           "name": "idle",
-          "prefix": "idle0",
-          "frameRate": 24
+          "prefix": "idle0"
         },
         {
           "name": "confirm",
-          "prefix": "confirm0",
-          "frameRate": 24
+          "prefix": "confirm0"
         }
       ]
     },
@@ -27,8 +26,7 @@
       "animations": [
         {
           "name": "idle",
-          "prefix": "idle0",
-          "frameRate": 24
+          "prefix": "idle0"
         }
       ]
     }

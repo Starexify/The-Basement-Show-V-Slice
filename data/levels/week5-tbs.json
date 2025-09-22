@@ -7,16 +7,15 @@
       "assetPath": "storymenu/props/DOJ Jerry",
       "scale": 0.35,
       "offsets": [500, 355],
+      "danceEvery": 0.25,
       "animations": [
         {
           "name": "idle",
-          "prefix": "idle0",
-          "frameRate": 24
+          "prefix": "idle0"
         },
         {
           "name": "confirm",
-          "prefix": "confirm0",
-          "frameRate": 24
+          "prefix": "confirm0"
         }
       ]
     },
@@ -27,8 +26,7 @@
       "animations": [
         {
           "name": "idle",
-          "prefix": "idle0",
-          "frameRate": 24
+          "prefix": "idle0"
         }
       ]
     }

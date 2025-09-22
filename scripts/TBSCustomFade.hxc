@@ -19,8 +19,7 @@ class TBSCustomFade extends ScriptedMusicBeatSubState {
         var width:Int = Std.int(FlxG.width);
         var height:Int = Std.int(FlxG.height);
 
-        transitionSprite = new FunkinSprite(width + -1845, height + -1610);
-        transitionSprite.loadSparrow("kevin_normal");
+        transitionSprite = new FunkinSprite(width + -1845, height + -1610).loadSparrow("kevin_normal");
         transitionSprite.animation.addByPrefix("transition", "kevin_normal", 34, false);
         transitionSprite.scrollFactor.set(0, 0);
         add(transitionSprite);

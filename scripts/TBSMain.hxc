@@ -1,7 +1,11 @@
 import flixel.FlxG;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxTween;
 import funkin.api.discord.DiscordClient;
 import funkin.audio.FunkinSound;
 import funkin.FunkinMemory;
+import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.ModStore;
 import funkin.modding.module.ScriptedModule;
@@ -13,20 +17,26 @@ import lime.app.Application;
 import lime.graphics.Image;
 import openfl.filters.ShaderFilter;
 import StringTools;
+import funkin.ui.FullScreenScaleMode;
 
 class TBSMain extends ScriptedModule {
     var shaderVCR:MenusVCRShader;
     var shaderGlow:MenusGlowShader;
     var prevStoryId:String;
 
+    var tracks:FunkinSprite;
+    var tracksTxt:FlxText;
+
     var applied:Bool = false;
     static var targetDiff:String = "normal";
     static var targetWeeks:Array<String> = ["week1-tbs", "week2-tbs", "week3-tbs", "week4-tbs", "week5-tbs", "week6-tbs"];
 
     public static function setInTBSMenu(value:Bool) { ModStore.stores.set("inTBSMenu", value); }
+
     public static function inTBSMenu():Bool { return ModStore.get("inTBSMenu"); }
 
     public static function setInTBSState(value:Bool) { ModStore.stores.set("inTBSState", value); }
+
     public static function inTBSState():Bool { return ModStore.get("inTBSState"); }
 
     override public function onCreate(event:ScriptEvent) {
@@ -40,6 +50,22 @@ class TBSMain extends ScriptedModule {
         if (!(FlxG.state is StoryMenuState)) return;
         var storyMenu:StoryMenuState = FlxG.state;
         if (prevStoryId != storyMenu.currentLevelId) {
+            if (tracks != null) {
+                if (targetWeeks.contains(storyMenu.currentLevelId)) {
+                    updateTracks(storyMenu);
+                    FlxTween.tween(tracks, {alpha: 1}, 0.6);
+                    FlxTween.tween(tracksTxt, {alpha: 1}, 0.6);
+                }
+                else {
+                    FlxTween.tween(tracks, {alpha: 0}, 0.6);
+                    FlxTween.tween(tracksTxt, {alpha: 0}, 0.6);
+                    trace();
+                    storyMenu.refresh();
+                }
+            }
+
+            if (storyMenu.currentLevelId == "week2-tbs") storyMenu.levelProps.members[0].flipX = true;
+            else storyMenu.levelProps.members[0].flipX = false;
             storyMenu.levelBackground.screenCenter(0x01);
             prevStoryId = storyMenu.currentLevelId;
         }
@@ -71,18 +97,34 @@ class TBSMain extends ScriptedModule {
     override public function onStateChangeBegin(event:StateChangeScriptEvent) {
         if (!inTBSMenu()) return;
         if (!(FlxG.state is StoryMenuState) && !(FlxG.state is OptionsState)) return;
+
         WindowUtil.setWindowTitle("The Basement Show");
         setInTBSState(true);
     }
 
     override public function onStateChangeEnd(event:StateChangeScriptEvent) {
-        if (!(event.targetState is StoryMenuState) || !inTBSMenu()) return;
+        if (!(event.targetState is StoryMenuState)) return;
+        var storyMenu:StoryMenuState = event.targetState;
+
+        if (tracks == null) {
+            tracks = FunkinSprite.create(FlxG.width * 0.07 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), 56 + 425, "storymenu/tracks");
+            tracksTxt = new FlxText(FlxG.width * 0.05, tracks.y + 60, 0, "", 32);
+            tracksTxt.setFormat(Paths.font("Shermlock.ttf"), 32, 0xFFe55777, "center", FlxTextBorderStyle.OUTLINE, 0xFFFFFFFF);
+            tracksTxt.zIndex = tracks.zIndex = 101;
+            if (!targetWeeks.contains(storyMenu.currentLevelId)) tracks.alpha = tracksTxt.alpha = 0;
+            updateTracks(storyMenu);
+        }
+        if (storyMenu.currentLevelId == "week2-tbs") storyMenu.levelProps.members[0].flipX = true;
+        storyMenu.levelBackground.screenCenter(0x01);
+        storyMenu.add(tracks);
+        storyMenu.add(tracksTxt);
+
+        if (!inTBSMenu()) return;
         DiscordClient.setPresence({state: "In the Menus", details: null, largeImageKey: TBSConstants.DISCORD_LOGO});
         WindowUtil.setWindowTitle("The Basement Show");
 
-        var storyMenu:StoryMenuState = event.targetState;
-        var diff = storyMenu.levelList.indexOf("week1-tbs") - storyMenu.levelList.indexOf(storyMenu.currentLevelId);
-        storyMenu.changeLevel(diff);
+        /*var diff = storyMenu.levelList.indexOf("week1-tbs") - storyMenu.levelList.indexOf(storyMenu.currentLevelId);
+        storyMenu.changeLevel(diff);*/
         playTBSMenuMusic();
 
         shaderGlow = new MenusGlowShader();
@@ -94,6 +136,15 @@ class TBSMain extends ScriptedModule {
             FlxG.camera.filters.push(new ShaderFilter(shaderVCR));
         }
         else FlxG.camera.filters = [new ShaderFilter(shaderGlow), new ShaderFilter(shaderVCR)];
+    }
+
+    function updateTracks(storyMenu:StoryMenuState) {
+        var displayNames = storyMenu.currentLevel.getSongDisplayNames(storyMenu.currentDifficultyId);
+        var fixedNames = displayNames.map(name -> return (name == "Unknown") ? "???" : name);
+
+        tracksTxt.text = fixedNames.join('\n');
+        tracksTxt.screenCenter(0x01);
+        tracksTxt.x -= FlxG.width * 0.35 - (FullScreenScaleMode.gameCutoutSize.x * 0.4);
     }
 
     public static function playTBSMenuMusic() {
@@ -123,5 +174,7 @@ class TBSMain extends ScriptedModule {
     override public function onDestroy(event:ScriptEvent) {
         if (shaderGlow != null) shaderGlow = null;
         if (shaderVCR != null) shaderVCR = null;
+        if (tracks != null) tracks.destroy();
+        if (tracksTxt != null) tracksTxt.destroy();
     }
 }
