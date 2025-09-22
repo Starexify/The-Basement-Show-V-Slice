@@ -11,9 +11,18 @@ import funkin.ui.story.StoryMenuState;
 import funkin.util.WindowUtil;
 import lime.app.Application;
 import lime.graphics.Image;
+import openfl.filters.ShaderFilter;
+import StringTools;
 
 class TBSMain extends ScriptedModule {
     var prevState:Bool = false;
+
+    var shaderVCR:MenusVCRShader;
+    var shaderGlow:MenusGlowShader;
+
+    var applied:Bool = false;
+    static var targetDiff:String = "normal";
+    static var targetWeeks:Array<String> = ["week1-tbs", "week2-tbs", "week3-tbs", "week4-tbs", "week5-tbs", "week6-tbs",];
 
     public static function setInTBSMenu(value:Bool) { ModStore.stores.set("inTBSMenu", value); }
 
@@ -21,6 +30,19 @@ class TBSMain extends ScriptedModule {
 
     override public function onUpdate(event:UpdateScriptEvent) {
         if (FlxG.keys.justPressed.TAB && (FlxG.state is MainMenuState)) openTBSTitleScreen();
+
+        if (!(FlxG.state is StoryMenuState)) return;
+        var storyMenu:StoryMenuState = FlxG.state;
+        if (targetWeeks.contains(storyMenu.currentLevelId) && storyMenu.currentDifficultyId != targetDiff) {
+            applied = false;
+            for (sound in FunkinSound.pool) if (StringTools.contains(sound._label, "scrollMenu.ogg")) sound.stop();
+        }
+        if (targetWeeks.contains(storyMenu.currentLevelId) && storyMenu.currentDifficultyId == targetDiff) storyMenu.leftDifficultyArrow.visible = storyMenu.rightDifficultyArrow.visible = storyMenu.difficultySprite.visible = false;
+        else storyMenu.leftDifficultyArrow.visible = storyMenu.rightDifficultyArrow.visible = storyMenu.difficultySprite.visible = true;
+        if (applied) return;
+        storyMenu.leftDifficultyArrow.visible = storyMenu.rightDifficultyArrow.visible = storyMenu.difficultySprite.visible = false;
+        storyMenu.currentDifficultyId = StoryMenuState.rememberedDifficulty = targetDiff;
+        applied = true;
     }
 
     override public function onStateCreate(event:ScriptEvent) {
@@ -47,9 +69,19 @@ class TBSMain extends ScriptedModule {
     override public function onStateChangeEnd(event:StateChangeScriptEvent) {
         if (!(event.targetState is StoryMenuState) || !inTBSMenu()) return;
         var storyMenu:StoryMenuState = event.targetState;
-        var diff = storyMenu.levelList.indexOf("weekend1") - storyMenu.levelList.indexOf(storyMenu.currentLevelId);
+        var diff = storyMenu.levelList.indexOf("week1-tbs") - storyMenu.levelList.indexOf(storyMenu.currentLevelId);
         storyMenu.changeLevel(diff);
         playTBSMenuMusic();
+
+        shaderGlow = new MenusGlowShader();
+        shaderGlow.setFloat("size", 16.0);
+        shaderGlow.setFloat("dim", 2.0);
+        shaderVCR = new MenusVCRShader();
+        if (FlxG.camera.filters != null) {
+            FlxG.camera.filters.push(new ShaderFilter(shaderGlow));
+            FlxG.camera.filters.push(new ShaderFilter(shaderVCR));
+        }
+        else FlxG.camera.filters = [new ShaderFilter(shaderGlow), new ShaderFilter(shaderVCR)];
     }
 
     public static function playTBSMenuMusic() {

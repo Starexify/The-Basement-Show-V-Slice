@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="DOJ Jerry.png">
+<SubTexture name="confirm0000" x="894" y="537" width="739" height="374" frameX="-26" frameY="-176" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0001" x="0" y="1064" width="624" height="484" frameX="-103" frameY="-65" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0002" x="624" y="1064" width="592" height="508" frameX="-123" frameY="-38" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0003" x="306" y="537" width="588" height="513" frameX="-124" frameY="-29" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0000" x="0" y="0" width="308" height="537" frameX="-363" frameY="-2" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0001" x="308" y="0" width="312" height="526" frameX="-364" frameY="-8" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0002" x="1216" y="1064" width="318" height="523" frameX="-365" frameY="-14" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0003" x="620" y="0" width="319" height="521" frameX="-363" frameY="-14" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0004" x="0" y="537" width="306" height="527" frameX="-367" frameY="-12" frameWidth="960" frameHeight="540" />
+</TextureAtlas>

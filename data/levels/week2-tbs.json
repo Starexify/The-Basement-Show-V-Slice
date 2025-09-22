@@ -1,0 +1,38 @@
+{
+  "version": "1.0.0",
+  "name": "Love is Hopeless",
+  "titleAsset": "storymenu/titles/week2-tbs",
+  "props": [
+    {
+      "assetPath": "storymenu/props/Depressive Tom",
+      "scale": 0.35,
+      "offsets": [460, 348],
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "idle0",
+          "frameRate": 24
+        },
+        {
+          "name": "confirm",
+          "prefix": "confirm0",
+          "frameRate": 24
+        }
+      ]
+    },
+    {
+      "assetPath": "storymenu/props/BF-TBS",
+      "scale": 0.25,
+      "offsets": [210, 270],
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "idle0",
+          "frameRate": 24
+        }
+      ]
+    }
+  ],
+  "background": "storymenu/backgrounds/menu_tom",
+  "songs": ["blue", "tragical-comedy", "shattered"]
+}

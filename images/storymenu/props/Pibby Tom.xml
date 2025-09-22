@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="Pibby Tom.png">
+<SubTexture name="confirm0000" x="0" y="0" width="513" height="560" frameX="-148" frameY="-2" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0001" x="0" y="0" width="513" height="560" frameX="-148" frameY="-2" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0002" x="513" y="0" width="527" height="562" frameX="-143" frameY="0" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0003" x="513" y="0" width="527" height="562" frameX="-143" frameY="0" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0004" x="1040" y="0" width="519" height="555" frameX="-152" frameY="-7" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0005" x="1040" y="0" width="519" height="555" frameX="-152" frameY="-7" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0006" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0007" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0008" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0009" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0010" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0011" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0012" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0013" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0014" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0015" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0016" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0017" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0018" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0019" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0020" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0021" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0022" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0023" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0024" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="confirm0025" x="0" y="562" width="510" height="552" frameX="-160" frameY="-9" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0000" x="510" y="562" width="462" height="518" frameX="-230" frameY="-38" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0001" x="510" y="562" width="462" height="518" frameX="-230" frameY="-38" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0002" x="972" y="562" width="457" height="524" frameX="-233" frameY="-28" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0003" x="972" y="562" width="457" height="524" frameX="-233" frameY="-28" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0004" x="0" y="1114" width="453" height="539" frameX="-235" frameY="-21" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0005" x="0" y="1114" width="453" height="539" frameX="-235" frameY="-21" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0006" x="453" y="1114" width="446" height="528" frameX="-237" frameY="-23" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0007" x="453" y="1114" width="446" height="528" frameX="-237" frameY="-23" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0008" x="899" y="1114" width="446" height="522" frameX="-237" frameY="-30" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0009" x="899" y="1114" width="446" height="522" frameX="-237" frameY="-30" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0010" x="0" y="1653" width="446" height="527" frameX="-237" frameY="-30" frameWidth="960" frameHeight="540" />
+<SubTexture name="idle0011" x="0" y="1653" width="446" height="527" frameX="-237" frameY="-30" frameWidth="960" frameHeight="540" />
+</TextureAtlas>
