@@ -1,0 +1,163 @@
+import flixel.FlxSprite;
+import flixel.group.FlxTypedSpriteGroup;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayState;
+import funkin.util.FileUtilSandboxed;
+import funkin.util.ReflectUtil;
+
+class SongCard extends FlxTypedSpriteGroup {
+    static final CARD_DURATION:Float = 1.0;
+    static final DISPLAY_DELAY:Float = 5.0;
+    static final FINAL_POSITIONS = {
+        bgThing: 0,
+        musicIcon: 0,
+        beforeSongText: 74,
+        compIcon: 0,
+        compTxt: 74,
+        charterIcon: 10,
+        charterTxt: 74,
+        musicanIcon: 420,
+        chartrIcon: 420,
+        iconSong: 390
+    };
+
+    var cardInfo:CardInfo;
+    var currentTweens:Array<FlxTween> = [];
+
+    var musicIcon:FunkinSprite;
+    var compIcon:FunkinSprite;
+    var charterIcon:FunkinSprite;
+    var musicanIcon:FunkinSprite;
+    var chartrIcon:FunkinSprite;
+    var iconSong:FunkinSprite;
+    var bgThing:FunkinSprite;
+
+    var beforeSongText:FlxText;
+    var compTxt:FlxText;
+    var charterTxt:FlxText;
+
+    public function new(?x:Float, ?y:Float) {
+        super(x, y);
+
+        cardInfo = ReflectUtil.getField(FileUtilSandboxed.readJSONFromPath(Assets.getPath(Paths.json("songCards"))), PlayState.instance.currentSong.id);
+
+        createBackground();
+        createIcons();
+        createTexts();
+
+        iconSong = FunkinSprite.create(-1380, 160, "icons/icon-" + cardInfo.songData[1]);
+        iconSong.frame = PlayState.instance.iconP2.frames.frames[cardInfo.songData[2]];
+        iconSong.scrollFactor.set();
+
+        var elements = [bgThing, musicIcon, beforeSongText, compIcon, compTxt, charterIcon, charterTxt, iconSong, musicanIcon, chartrIcon];
+        for (element in elements) if (element != null) add(element);
+
+        setupAnimations();
+    }
+
+    override public function update(elapsed:Float):Void {
+        super.update(elapsed);
+
+        if (musicanIcon != null) musicanIcon.scale.set(PlayState.instance.iconP2.scale.x - 0.35, PlayState.instance.iconP2.scale.y - 0.35);
+        if (chartrIcon != null) chartrIcon.scale.set(PlayState.instance.iconP2.scale.x - 0.35, PlayState.instance.iconP2.scale.y - 0.35);
+        if (iconSong != null) iconSong.scale.set(PlayState.instance.iconP2.scale.x - 0.35, PlayState.instance.iconP2.scale.y - 0.35);
+        if (musicIcon != null) musicIcon.angle -= 1;
+    }
+
+    function createBackground() {
+        bgThing = FunkinSprite.create(-1000, 200, "songCards/background/" + cardInfo.songData[3]);
+        bgThing.scale.set(0.35, 0.35);
+        bgThing.updateHitbox();
+        bgThing.alpha = 0.8;
+        bgThing.scrollFactor.set();
+    }
+
+    function createIcons() {
+        musicIcon = FunkinSprite.create(-1010, 205, "songCards/song_icon");
+        setupIcon(musicIcon, 0.7);
+
+        compIcon = FunkinSprite.create(-1000, 275, "songCards/music_icon");
+        setupIcon(compIcon, 0.55);
+
+        charterIcon = FunkinSprite.create(-1010, 380, "songCards/charter_icon");
+        setupIcon(charterIcon, 0.7);
+
+        musicanIcon = FunkinSprite.create(-1090, 240, "songCards/credits/" + cardInfo.composer[2]);
+        musicanIcon.scrollFactor.set();
+
+        chartrIcon = FunkinSprite.create(-1000, 320, "songCards/credits/" + cardInfo.charter[2]);
+        chartrIcon.scrollFactor.set();
+    }
+
+    function createTexts() {
+        beforeSongText = setupText(-1074, 215, PlayState.instance.currentSong.songName, PlayState.instance.currentSong.songName.length > 14 ? 30 : 35, cardInfo.songData[0]);
+
+        compTxt = setupText(-1174, 290, cardInfo.composer[0], 25, cardInfo.composer[1]);
+
+        charterTxt = setupText(-1000, compTxt.y + 90, cardInfo.charter[0], 25, cardInfo.charter[1]);
+
+        compTxt.borderSize = beforeSongText.borderSize = charterTxt.borderSize = 2.5;
+    }
+
+    function setupAnimations() {
+        clearTweens();
+
+        createSlideAnimation(bgThing, FINAL_POSITIONS.bgThing, -1000);
+        createSlideAnimation(musicIcon, FINAL_POSITIONS.musicIcon, -1010);
+        createSlideAnimation(beforeSongText, FINAL_POSITIONS.beforeSongText, -1074);
+        createSlideAnimation(compIcon, FINAL_POSITIONS.compIcon, -1110);
+        createSlideAnimation(compTxt, FINAL_POSITIONS.compTxt, -1174);
+        createSlideAnimation(charterIcon, FINAL_POSITIONS.charterIcon, -1110);
+        createSlideAnimation(charterTxt, FINAL_POSITIONS.charterTxt, -1174);
+        createSlideAnimation(musicanIcon, FINAL_POSITIONS.musicanIcon, -1400);
+        createSlideAnimation(chartrIcon, FINAL_POSITIONS.chartrIcon, -1400);
+        createSlideAnimation(iconSong, FINAL_POSITIONS.iconSong, -1380);
+    }
+
+    function createSlideAnimation(obj:FlxSprite, targetX:Float, exitX:Float):Void {
+        if (obj == null) return;
+        var persObj = obj;
+        var persX = exitX;
+
+        var slideIn = FlxTween.tween(persObj, {x: targetX}, CARD_DURATION, {
+            ease: FlxEase.expoOut,
+            onComplete: function(t:FlxTween) {
+                var slideOut = FlxTween.tween(persObj, {x: persX}, CARD_DURATION, { ease: FlxEase.backInOut, startDelay: DISPLAY_DELAY });
+                currentTweens.push(slideOut);
+            }
+        });
+        currentTweens.push(slideIn);
+    }
+
+    function setupIcon(icon:FunkinSprite, scale:Float) {
+        icon.scale.set(scale, scale);
+        icon.updateHitbox();
+        icon.scrollFactor.set();
+    }
+
+    function setupText(x:Float, y:Float, text:String, size:Int, colorHex:String):FlxText {
+        var textObj = new FlxText(x, y, 500, text);
+        textObj.setFormat(Paths.font("TBS.ttf"), size, FlxColor.fromString("0x" + colorHex), "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        return textObj;
+    }
+
+    function clearTweens() {
+        for (tween in currentTweens) {
+            if (tween != null) tween.cancel();
+        }
+        currentTweens = [];
+    }
+
+    override public function destroy() {
+        cardInfo = null;
+        clearTweens();
+        super.destroy();
+    }
+}
+
+typedef CardInfo = {composer:Array<String>, charter:Array<String>, songData:Array<String>}

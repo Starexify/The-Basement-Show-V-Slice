@@ -1,0 +1,32 @@
+{
+  "props": [
+    {
+      "zIndex": 10,
+      "position": [-800, -450],
+      "name": "basement",
+      "assetPath": "stages/basement",
+      "scroll": [1.1, 1.1]
+    }
+  ],
+  "cameraZoom": 0.75,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [989.5, 885],
+      "cameraOffsets": [-100, -100]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [335, 865],
+      "cameraOffsets": [150, -100]
+    },
+    "gf": {
+      "zIndex": 100,
+      "cameraOffsets": [0, 0],
+      "position": [751.5, 787]
+    }
+  },
+  "name": "Basement",
+  "directory": "default"
+}

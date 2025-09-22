@@ -3,27 +3,18 @@
   "songName": "House for Sale",
   "artist": "Wind",
   "charter": "Unknown",
-  "looped": false,
-  "offsets": {
-    "instrumental": 0,
-    "altInstrumentals": {    },
-    "vocals": {    },
-    "altVocals": {    }
-  },
   "playData": {
     "songVariations": [    ],
-    "difficulties": [
-      "normal"
-    ],
+    "difficulties": [ "normal" ],
     "characters": {
       "player": "bf-tbs",
-      "girlfriend": "gf",
+      "girlfriend": "gf-tbs",
       "opponent": "mouse",
       "opponentVocals": [ "mouse" ]
     },
-    "stage": "mainStage",
+    "stage": "basement",
     "noteStyle": "basement",
-    "ratings": {    },
+    "ratings": { "normal": 0 },
     "previewStart": 0,
     "previewEnd": 0
   },
