@@ -8,5 +8,10 @@
     "composer": ["636363", "Rhodes_W"],
     "charter": ["213b53", "Noah"],
     "songData": ["AA5F19", "mouse-p1", 1, "songBG"]
+  },
+  "sirokou": {
+    "composer": ["7B3691", "NaglazGYamiZaleD"],
+    "charter": ["C1F8F3", "Maxplay"],
+    "songData": ["850000", "mouse-p2.5", 0, "songBG"]
   }
 }

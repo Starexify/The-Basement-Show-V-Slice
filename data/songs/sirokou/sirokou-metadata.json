@@ -1,0 +1,38 @@
+{
+  "version": "2.2.4",
+  "songName": "Sirokou",
+  "artist": "NaglazGYamiZaleD",
+  "charter": "Maxplay Games",
+  "playData": {
+    "songVariations": [    ],
+    "difficulties": ["normal"],
+    "characters": {
+      "player": "bf-tbs",
+      "girlfriend": "gf-tbs",
+      "opponent": "mouse angry 2",
+      "opponentVocals": ["mouse"]
+    },
+    "stage": "basement",
+    "noteStyle": "basement",
+    "ratings": { "normal": 0 },
+    "previewStart": 0,
+    "previewEnd": 0
+  },
+  "generatedBy": "Friday Night Funkin' - v0.7.5",
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 170,
+      "n": 4,
+      "d": 4,
+      "bt": [
+        4,
+        4,
+        4,
+        4
+      ]
+    }
+  ]
+}
