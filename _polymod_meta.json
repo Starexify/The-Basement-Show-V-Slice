@@ -1,13 +1,13 @@
 {
-  "title": "PolyMixins",
-  "description": "A runtime AST mixin framework for modifying scripted classes in V-Slice mods.",
+  "title": "The Basement Show [V-Slice Port]",
+  "description": "A port of the mod The Basement Show for V-Slice",
   "contributors": [
     {
       "name": "ImVeryBad",
-      "role": "Developer"
+      "role": "Porter"
     }
   ],
   "api_version": "0.7.5",
-  "mod_version": "0.0.0",
+  "mod_version": "2.6.0",
   "license": "MIT"
 }
