@@ -87,20 +87,17 @@ class SongCard extends FlxTypedSpriteGroup {
         charterIcon = FunkinSprite.create(-1010, 380, "songCards/charter_icon");
         setupIcon(charterIcon, 0.7);
 
-        musicanIcon = FunkinSprite.create(-1090, 240, "songCards/credits/" + cardInfo.composer[2]);
+        musicanIcon = FunkinSprite.create(-1090, 240, "songCards/credits/" + cardInfo.composer[1]);
         musicanIcon.scrollFactor.set();
 
-        chartrIcon = FunkinSprite.create(-1000, 320, "songCards/credits/" + cardInfo.charter[2]);
+        chartrIcon = FunkinSprite.create(-1000, 320, "songCards/credits/" + cardInfo.charter[1]);
         chartrIcon.scrollFactor.set();
     }
 
     function createTexts() {
         beforeSongText = setupText(-1074, 215, PlayState.instance.currentSong.songName, PlayState.instance.currentSong.songName.length > 14 ? 30 : 35, cardInfo.songData[0]);
-
-        compTxt = setupText(-1174, 290, cardInfo.composer[0], 25, cardInfo.composer[1]);
-
-        charterTxt = setupText(-1000, compTxt.y + 90, cardInfo.charter[0], 25, cardInfo.charter[1]);
-
+        compTxt = setupText(-1174, 290, PlayState.instance.currentSong.songArtist, 25, cardInfo.composer[0]);
+        charterTxt = setupText(-1000, compTxt.y + 90, PlayState.instance.currentSong.charter, 25, cardInfo.charter[0]);
         compTxt.borderSize = beforeSongText.borderSize = charterTxt.borderSize = 2.5;
     }
 
