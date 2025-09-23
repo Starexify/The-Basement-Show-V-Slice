@@ -31,6 +31,9 @@ class TBSHud extends ScriptedModule {
         if (playState == null) return;
         if (!SONG_LIST.contains(playState.currentSong.id)) return;
 
+        TBSMain.setInTBSMenu(false);
+        TBSMain.setInTBSState(true);
+
         WindowUtil.setWindowTitle("The Basement Show - Now Playing: " + playState.currentSong.songName + " - By: " + playState.currentSong.songArtist);
 
         // Changed Health Bar texture and stuff

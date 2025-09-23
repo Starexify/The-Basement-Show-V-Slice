@@ -24,7 +24,6 @@ import funkin.util.Constants;
 import funkin.util.WindowUtil;
 import Main;
 import openfl.filters.ShaderFilter;
-import StringTools;
 
 class TBSMainMenu extends ScriptedMusicBeatState {
     var menuItems:Null<MenuTypedList<AtlasMenuItem>>;
@@ -162,6 +161,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
     }
 
     function selectItem(nextState:FlxState) {
+        uiStateMachine.transition(UIState.Exiting);
         TBSMain.playSound("confirmMenuTBS");
         var persNextState = nextState;
 

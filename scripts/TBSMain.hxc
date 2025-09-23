@@ -124,6 +124,13 @@ class TBSMain extends ScriptedModule {
         else FlxG.camera.filters = [new ShaderFilter(shaderGlow), new ShaderFilter(shaderVCR)];
     }
 
+    override public function onSubStateOpenEnd(event:SubStateScriptEvent) {
+        if (!inTBSState()) return;
+        if (!(event.targetState is FreeplayState)) return;
+        setInTBSState(false);
+        FlxG.switchState(new TBSFreeplay());
+    }
+
     function handleStoryMenuUpdate(storyMenu:StoryMenuState) {
         var currentId = storyMenu.currentLevelId;
         var isTargetWeek = TBSConstants.TBS_WEEKS.contains(currentId);

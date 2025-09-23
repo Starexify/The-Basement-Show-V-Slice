@@ -3,7 +3,10 @@ import flixel.FlxG;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.base.ScriptedFlxSubState;
 import funkin.modding.ModStore;
+import funkin.play.PlayState;
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MusicBeatState;
+import funkin.ui.transition.LoadingState;
 
 class TBSCustomFade extends ScriptedFlxSubState {
     var isTransIn:Bool;
@@ -19,7 +22,7 @@ class TBSCustomFade extends ScriptedFlxSubState {
         var width:Int = Std.int(FlxG.width);
         var height:Int = Std.int(FlxG.height);
 
-        transitionSprite = new FunkinSprite(width + -1845, height + -1610).loadSparrow("kevin_normal");
+        transitionSprite = new FunkinSprite(width - 1845 - (FullScreenScaleMode.gameCutoutSize.x * 0.5), height - 1610).loadSparrow("kevin_normal");
         transitionSprite.animation.addByPrefix("transition", "kevin_normal", 34, false);
         transitionSprite.scrollFactor.set(0, 0);
         add(transitionSprite);
@@ -34,12 +37,31 @@ class TBSCustomFade extends ScriptedFlxSubState {
     }
 
     function handleStateSwitch() {
+        var params:Dynamic = ModStore.get("TBSPlayStateParams");
+        if (params != null) {
+            ModStore.stores.remove("TBSPlayStateParams");
+            close();
+            LoadingState.loadPlayState(params, true);
+            return;
+        }
+
         var storedState:MusicBeatState = ModStore.get("TBSNextState");
         if (storedState != null) {
             ModStore.stores.remove("TBSNextState");
             close();
             FlxG.switchState(() -> storedState);
         }
+    }
+
+    public static function switchPlayState(params:PlayStateParams, fadeTime:Float) {
+        if (!FlxTransitionableState.skipNextTransIn) {
+            FlxG.state.openSubState(new TBSCustomFade(fadeTime, false));
+
+            ModStore.stores.set("TBSPlayStateParams", params);
+            return;
+        }
+        FlxTransitionableState.skipNextTransIn = false;
+        LoadingState.loadPlayState(params, true);
     }
 
     public static function switchState(nextState:MusicBeatState) {
