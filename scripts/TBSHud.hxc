@@ -9,7 +9,7 @@ import funkin.util.WindowUtil;
 import openfl.filters.ShaderFilter;
 
 class TBSHud extends ScriptedModule {
-    public static var SONG_LIST:Array<String> = ["house-for-sale", "sirokou"];
+    public static var SONG_LIST:Array<String> = ["house-for-sale", "evaporate", "sirokou"];
 
     var playState(get, never):PlayState;
 
