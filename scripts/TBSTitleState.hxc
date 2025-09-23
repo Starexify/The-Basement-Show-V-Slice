@@ -4,15 +4,17 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
-import funkin.audio.FunkinSound;
 import funkin.Conductor;
 import funkin.FunkinMemory;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.video.FunkinVideoSprite;
 import funkin.input.Cursor;
 import funkin.modding.ModStore;
+import funkin.Preferences;
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.ui.ScriptedMusicBeatState;
+import Main;
 import StringTools;
 
 class TBSTitleState extends ScriptedMusicBeatState {
@@ -42,7 +44,7 @@ class TBSTitleState extends ScriptedMusicBeatState {
         bg.screenCenter();
         add(bg);
 
-        modLogo = FunkinSprite.create(255, 300, "titlescreen/TBSLogoBlank");
+        modLogo = FunkinSprite.create(255 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), 300, "titlescreen/TBSLogoBlank");
         modLogo.scale.set(0.8, 0.8);
         modLogo.scrollFactor.set();
         modLogo.antialiasing = true;
@@ -59,19 +61,23 @@ class TBSTitleState extends ScriptedMusicBeatState {
 
         if (initialized && !transitioning && pressedEnter && introVid == null) {
             FlxG.camera.flash(FlxColor.WHITE, 1);
-            FunkinSound.playOnce(Paths.sound("confirmMenuTBS"), 0.7);
+            TBSMain.playSound("confirmMenuTBS", 0.7);
             transitioning = true;
 
             new FlxTimer().start(1, tmr -> moveToMainMenu());
         }
 
         if ((controls.ACCEPT || pressedEnter) && introVid != null) {
+            FlxTween.tween(Main.debugDisplay, {alpha: Preferences.debugDisplayBGOpacity}, 4, {ease:FlxEase.expoIn});
             setPlayedIntro(true);
             introVid.stop();
             introVid = null;
             enterTitle();
         }
-        if (controls.BACK) TBSCustomFade.switchState(new MainMenuState());
+        if (controls.BACK) {
+            TBSMain.playSound("cancelMenuTBS");
+            TBSCustomFade.switchState(new MainMenuState());
+        }
 
         super.update(elapsed);
     }
@@ -85,6 +91,8 @@ class TBSTitleState extends ScriptedMusicBeatState {
     function startIntroVid() {
         if (FlxG.sound.music.playing) FlxG.sound.music.stop();
 
+        Main.debugDisplay.alpha = 0;
+
         introVid = new FunkinVideoSprite();
         introVid.antialiasing = true;
         introVid.bitmap.onFormatSetup.add(() -> {
@@ -97,6 +105,7 @@ class TBSTitleState extends ScriptedMusicBeatState {
             }
         });
         introVid.bitmap.onEndReached.add(() -> {
+            FlxTween.tween(Main.debugDisplay, {alpha: Preferences.debugDisplayBGOpacity}, 4, {ease:FlxEase.expoIn});
             setPlayedIntro(true);
             introVid.destroy();
             introVid = null;
@@ -115,13 +124,7 @@ class TBSTitleState extends ScriptedMusicBeatState {
 
     function playMenuMusic() {
         var shouldFadeIn:Bool = !StringTools.contains(FlxG.sound.music._label, "basementMenu");
-        FunkinSound.playMusic("basementMenu",
-        {
-            startingVolume: 0.0,
-            overrideExisting: true,
-            restartTrack: false,
-            persist: true
-        });
+        TBSMain.playMenuMusic("basementMenu", 0.0);
         if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
     }
 }

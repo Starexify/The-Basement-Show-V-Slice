@@ -8,12 +8,12 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.api.discord.DiscordClient;
-import funkin.audio.FunkinSound;
 import funkin.Conductor;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.ModStore;
 import funkin.Preferences;
 import funkin.ui.AtlasMenuItem;
+import funkin.ui.FullScreenScaleMode;
 import funkin.ui.MenuTypedList;
 import funkin.ui.options.OptionsState;
 import funkin.ui.ScriptedMusicBeatState;
@@ -32,6 +32,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
     var overrideMusic:Bool = false;
 
     var canInteract(get, never):Bool;
+
     function get_canInteract():Bool {
         return uiStateMachine.canInteract();
     }
@@ -47,19 +48,20 @@ class TBSMainMenu extends ScriptedMusicBeatState {
     var uiStateMachine:UIStateMachine = new UIStateMachine();
     var menuEntries = [
         { label: "storymode", path: "mainmenu/tbs/storymode", nextState: new StoryMenuState() },
-        { label: "freeplay", path: "mainmenu/tbs/freeplay", nextState: new TBSTitleState() },
+        { label: "freeplay", path: "mainmenu/tbs/freeplay", nextState: new TBSFreeplay() },
         { label: "credits", path: "mainmenu/tbs/credits", nextState: new TBSTitleState() },
         { label: "options", path: "mainmenu/tbs/options", nextState: new OptionsState() }
     ];
 
     function setRememberedSelectedIndex(value:Int) { ModStore.stores.set("tbsRSI", value); }
+
     function getRememberedSelectedIndex():Int { return ModStore.get("tbsRSI"); }
 
     override function create() {
         transIn = FlxTransitionableState.defaultTransIn;
         transOut = FlxTransitionableState.defaultTransOut;
 
-        if (!overrideMusic) playMenuMusic();
+        if (!overrideMusic) TBSMain.playMenuMusic("basementMenu");
 
         WindowUtil.setWindowTitle("The Basement Show - Main Menu");
         DiscordClient.setPresence({state: "In the Menus", details: null, largeImageKey: TBSConstants.DISCORD_LOGO});
@@ -73,15 +75,14 @@ class TBSMainMenu extends ScriptedMusicBeatState {
         bg.screenCenter();
         add(bg);
 
-        menuChar = FunkinSprite.create(689, 55, "mainmenuchar/freeplay");
+        menuChar = FunkinSprite.create(689 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), 55, "mainmenuchar/freeplay");
         add(menuChar);
 
         menuItems = new MenuTypedList();
         add(menuItems);
 
         menuItems.onChange.add(item -> {
-            for (sound in FunkinSound.pool) if (StringTools.contains(sound._label, "scrollMenu.ogg")) sound.stop();
-            FunkinSound.playOnce(Paths.sound("scrollMenuTBS"));
+            TBSMain.playScrollSound();
             menuChar.loadTexture('mainmenuchar/' + item.name);
         });
         menuItems.onAcceptPress.add(_ -> uiStateMachine.transition(UIState.Interacting));
@@ -96,7 +97,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
 
         menuItems.selectItem(getRememberedSelectedIndex());
 
-        modLogo = FunkinSprite.create(950, 20, 'mainmenu/TBSLogo');
+        modLogo = FunkinSprite.create(950 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), 20, 'mainmenu/TBSLogo');
         modLogo.scale.set(0.4, 0.4);
         modLogo.scrollFactor.set(0, 0);
         modLogo.antialiasing = true;
@@ -161,7 +162,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
     }
 
     function selectItem(nextState:FlxState) {
-        FlxG.sound.play(Paths.sound("confirmMenuTBS"));
+        TBSMain.playSound("confirmMenuTBS");
         var persNextState = nextState;
 
         for (entry in menuItems.members) {
@@ -181,16 +182,6 @@ class TBSMainMenu extends ScriptedMusicBeatState {
                 });
             }
         }
-    }
-
-    function playMenuMusic() {
-        FunkinSound.playMusic("basementMenu",
-        {
-            startingVolume: 1.0,
-            overrideExisting: true,
-            restartTrack: false,
-            persist: true
-        });
     }
 
     override public function beatHit():Bool {
@@ -218,7 +209,7 @@ class TBSMainMenu extends ScriptedMusicBeatState {
     function goBack() {
         uiStateMachine.transition(UIState.Exiting);
         setRememberedSelectedIndex(menuItems?.selectedIndex ?? 0);
-        FunkinSound.playOnce(Paths.sound("cancelMenuTBS"));
+        TBSMain.playSound("cancelMenuTBS");
 
         TBSCustomFade.switchState(new TBSTitleState());
     }

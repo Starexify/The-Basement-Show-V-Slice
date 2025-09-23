@@ -1,0 +1,13 @@
+import funkin.modding.events.ScriptEvent;
+import funkin.play.PlayState;
+import funkin.play.song.ScriptedSong;
+
+class HouseForSale extends ScriptedSong {
+    function new() {
+        super("house-for-sale");
+    }
+
+    override public function onCreate(event:ScriptEvent):Void {
+        PlayState.instance.moveToResultsScreen(false);
+    }
+}

@@ -1,0 +1,43 @@
+import flixel.FlxG;
+import funkin.graphics.FunkinSprite;
+import funkin.ui.ScriptedMusicBeatState;
+import openfl.filters.ShaderFilter;
+
+class TBSFreeplay extends ScriptedMusicBeatState {
+
+    var bg:FunkinSprite;
+    var shaderVCR:MenusVCRShader;
+    var shaderGlow:MenusGlowShader;
+
+    override function create() {
+        persistentUpdate = true;
+
+        TBSMain.playMenuMusic("freeplay");
+
+        bg = FunkinSprite.create(0, 0, "freeplay/backBG");
+        bg.screenCenter();
+        add(bg);
+
+        shaderGlow = new MenusGlowShader();
+        shaderGlow.setFloat("size", 16.0);
+        shaderGlow.setFloat("dim", 2.0);
+        shaderVCR = new MenusVCRShader();
+        if (FlxG.camera.filters != null) {
+            FlxG.camera.filters.push(new ShaderFilter(shaderGlow));
+            FlxG.camera.filters.push(new ShaderFilter(shaderVCR));
+        }
+        else FlxG.camera.filters = [new ShaderFilter(shaderGlow), new ShaderFilter(shaderVCR)];
+
+        super.create();
+    }
+
+    override function update(elapsed:Float) {
+        super.update(elapsed);
+
+        if (controls.BACK) {
+            TBSMain.playMenuMusic("freakyMenuTBS");
+            TBSMain.playSound("cancelMenuTBS");
+            TBSCustomFade.switchState(new TBSMainMenu());
+        }
+    }
+}
