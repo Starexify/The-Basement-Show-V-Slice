@@ -22,15 +22,12 @@ import Main;
 import openfl.filters.ShaderFilter;
 import openfl.text.TextFormat;
 import StringTools;
-import funkin.play.ResultState;
 
 class TBSMain extends ScriptedModule {
     static var TARGET_DIFF:String = "normal";
-    static var TARGET_WEEKS:Array<String> = ["week1-tbs", "week2-tbs", "week3-tbs", "week4-tbs", "week5-tbs", "week6-tbs"];
 
     var shaderVCR:MenusVCRShader;
     var shaderGlow:MenusGlowShader;
-    var tvShader:OldTVShader;
     var prevStoryId:String;
     var prevCapsule:Int;
     var tracks:FunkinSprite;
@@ -61,7 +58,7 @@ class TBSMain extends ScriptedModule {
 
         if (FlxG.state.subState is FreeplayState) {
             var freeplay:FreeplayState = FlxG.state.subState;
-            if (!TARGET_WEEKS.contains(freeplay.currentCapsule.freeplayData.levelId)) return;
+            if (!TBSConstants.TBS_WEEKS.contains(freeplay.currentCapsule.freeplayData.levelId)) return;
             playConfirmSound();
             if (prevCapsule == freeplay.curSelected) return;
             prevCapsule = freeplay.curSelected;
@@ -100,7 +97,7 @@ class TBSMain extends ScriptedModule {
             tracksTxt = new FlxText(FlxG.width * 0.05, tracks.y + 60, 0, "", 32);
             tracksTxt.setFormat(Paths.font("Shermlock.ttf"), 32, 0xFFe55777, "center", FlxTextBorderStyle.OUTLINE, 0xFFFFFFFF);
             tracksTxt.zIndex = tracks.zIndex = 101;
-            if (!TARGET_WEEKS.contains(storyMenu.currentLevelId)) tracks.alpha = tracksTxt.alpha = 0;
+            if (!TBSConstants.TBS_WEEKS.contains(storyMenu.currentLevelId)) tracks.alpha = tracksTxt.alpha = 0;
             updateTracks(storyMenu);
         }
         if (storyMenu.currentLevelId == "week2-tbs") storyMenu.levelProps.members[0].flipX = true;
@@ -127,20 +124,9 @@ class TBSMain extends ScriptedModule {
         else FlxG.camera.filters = [new ShaderFilter(shaderGlow), new ShaderFilter(shaderVCR)];
     }
 
-    override public function onSubStateOpenEnd(event:SubStateScriptEvent) {
-        if (!(event.targetState is ResultState) || !inTBSState()) return;
-        trace("ADD SHADER TO RESULTS");
-        tvShader = new OldTVShader();
-        tvShader.setFloat("blueOpac", 1.3);
-        for (cam in FlxG.cameras.list) {
-            if (cam.filters != null) cam.filters.push(new ShaderFilter(tvShader));
-            else cam.filters = [new ShaderFilter(tvShader)];
-        }
-    }
-
     function handleStoryMenuUpdate(storyMenu:StoryMenuState) {
         var currentId = storyMenu.currentLevelId;
-        var isTargetWeek = TARGET_WEEKS.contains(currentId);
+        var isTargetWeek = TBSConstants.TBS_WEEKS.contains(currentId);
 
         if (prevStoryId != currentId) {
             handleLevelChange(storyMenu, currentId, isTargetWeek);
@@ -219,6 +205,7 @@ class TBSMain extends ScriptedModule {
 
     function openTBSTitleScreen() {
         for (char in TBSConstants.MENU_CHARS) FunkinMemory.cacheTexture(Paths.image("mainmenuchar/" + char));
+        FunkinMemory.cacheTexture(Paths.image("kevin_normal"));
         setIcon("TBS");
         DiscordClient.setPresence({state: null, details: null, largeImageKey: TBSConstants.DISCORD_LOGO});
         WindowUtil.setWindowTitle("The Basement Show");
@@ -246,7 +233,6 @@ class TBSMain extends ScriptedModule {
     override public function onDestroy(event:ScriptEvent) {
         if (shaderGlow != null) shaderGlow = null;
         if (shaderVCR != null) shaderVCR = null;
-        if (tvShader != null) tvShader = null;
         if (tracks != null) tracks.destroy();
         if (tracksTxt != null) tracksTxt.destroy();
     }

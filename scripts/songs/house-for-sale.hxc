@@ -7,7 +7,7 @@ class HouseForSale extends ScriptedSong {
         super("house-for-sale");
     }
 
-    override public function onCreate(event:ScriptEvent):Void {
-        PlayState.instance.moveToResultsScreen(false);
+    override public function onCreate(event:ScriptEvent) {
+
     }
 }

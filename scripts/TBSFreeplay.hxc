@@ -1,22 +1,65 @@
 import flixel.FlxG;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import funkin.data.story.level.LevelRegistry;
 import funkin.graphics.FunkinSprite;
+import funkin.modding.ModStore;
 import funkin.ui.ScriptedMusicBeatState;
+import funkin.ui.story.Level;
+import funkin.util.WindowUtil;
 import openfl.filters.ShaderFilter;
 
 class TBSFreeplay extends ScriptedMusicBeatState {
+    static var DIFFICULTIES:Array<String> = ["normal"];
 
     var bg:FunkinSprite;
+    var arrows:FunkinSprite;
+    var songTitle:FunkinSprite = FunkinSprite.create(182, -40);
+    var songChar:FunkinSprite;
+    var levelText:FlxText = new FlxText(350, 580, FlxG.width, "", 8);
+    var scoreTxt:FlxText;
+    var compTxt:FlxText;
+    var menuCreditTxt:FlxText;
+
+    var levels:Array<Level> = [];
+    var songs:Array<String> = [];
+
+    var currentLevel:Level;
+    var currentSong:String;
+
     var shaderVCR:MenusVCRShader;
     var shaderGlow:MenusGlowShader;
 
+    var rememberedLevelId = "week1-tbs";
+    var rememberedSongId = "house-for-sale";
+
+    static function setRemLevelId(value:String) {
+        ModStore.stores.set("remLevelId", value);
+        rememberedLevelId = remLevelId();
+    }
+    static function remLevelId():String { return ModStore.get("remLevelId"); }
+    static function setRemSongId(value:String) {
+        ModStore.stores.set("remSongId", value);
+        rememberedSongId = remSongId();
+    }
+    static function remSongId():String { return ModStore.get("remSongId"); }
+
     override function create() {
         persistentUpdate = true;
-
         TBSMain.playMenuMusic("freeplay");
 
         bg = FunkinSprite.create(0, 0, "freeplay/backBG");
         bg.screenCenter();
         add(bg);
+
+        FlxG.camera.zoom = 2;
+        FlxG.camera.scroll.x = -250;
+        FlxG.camera.scroll.y = 10;
+        FlxTween.tween(FlxG.camera, {zoom: 1}, 1.5, {ease: FlxEase.circInOut});
+        FlxTween.tween(FlxG.camera.scroll, {x: 0, y: 0}, 1.5, {ease: FlxEase.circInOut});
 
         shaderGlow = new MenusGlowShader();
         shaderGlow.setFloat("size", 16.0);
@@ -28,16 +71,185 @@ class TBSFreeplay extends ScriptedMusicBeatState {
         }
         else FlxG.camera.filters = [new ShaderFilter(shaderGlow), new ShaderFilter(shaderVCR)];
 
+        arrows = FunkinSprite.create(300, 230, "freeplay/arrows");
+        add(arrows);
+
+        loadRememberedData();
+
+        levelText.setFormat(Paths.font("TBS.ttf"), 35, 0xFFFFFFFF, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+        levelText.screenCenter(0x01);
+        add(levelText);
+
+        scoreTxt = new FlxText(170, 150, 1200, "High Score : 100000000", 8);
+        scoreTxt.setFormat(Paths.font("TBS.ttf"), 35, 0xFFFFFFFF, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+        add(scoreTxt);
+
+        compTxt = new FlxText(-250, 0, 1200, "Wind", 8);
+        compTxt.setFormat(Paths.font("TBS.ttf"), 35, 0xFFFFFFFF, "center", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+        add(compTxt);
+
+        songChar = FunkinSprite.create(842, 250);
+        songChar.loadTexture('freeplay/pictures/' + rememberedSongId);
+        add(songChar);
+
+        menuCreditTxt = new FlxText(0, FlxG.height - 50, -100, "Now Playing: Forbidden Secrets (Freeplay Theme)\nBy Breath_Sans", 8);
+        menuCreditTxt.setFormat(Paths.font("TBS.ttf"), 24, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        menuCreditTxt.alpha = 0;
+        menuCreditTxt.y -= 20;
+        add(menuCreditTxt);
+
+        FlxTween.tween(menuCreditTxt, {alpha: 1}, 1.5, {
+            ease: FlxEase.quadInOut,
+            startDelay: 1,
+            onComplete: twn -> FlxTween.tween(menuCreditTxt, {alpha: 0}, 1.5, {ease: FlxEase.quadInOut, startDelay: 2})
+        });
+
+        add(songTitle);
+        initLevels();
+
         super.create();
     }
 
     override function update(elapsed:Float) {
         super.update(elapsed);
+        handleInputs();
+    }
 
-        if (controls.BACK) {
-            TBSMain.playMenuMusic("freakyMenuTBS");
-            TBSMain.playSound("cancelMenuTBS");
-            TBSCustomFade.switchState(new TBSMainMenu());
+    function handleInputs() {
+        if (!controls.active) return;
+
+        handleLevelSwitch();
+        handleSongSwitch();
+
+        if (controls.BACK) goBack();
+
+        if (controls.ACCEPT && controls.active) selectLevel();
+    }
+
+    function handleSongSwitch() {
+        if (controls.UI_UP_P) changeSong(-1);
+        if (controls.UI_DOWN_P) changeSong(1);
+    }
+
+    function handleLevelSwitch() {
+        if (controls.UI_LEFT_P) changeLevel(-1);
+        if (controls.UI_RIGHT_P) changeLevel(1);
+    }
+
+    function selectLevel() {}
+
+    function changeLevel(change:Int) {
+        var prevIndex = levels.indexOf(currentLevel);
+        var newIndex = prevIndex + change;
+
+        if (newIndex < 0) newIndex = 0;
+        else if (newIndex >= levels.length) newIndex = levels.length - 1;
+
+        if (newIndex == prevIndex) return;
+
+        currentLevel = levels[newIndex];
+        updateLevelDisplay();
+
+        setRemLevelId(currentLevel.id);
+
+        refreshSongsList();
+
+        currentSong = songs[0];
+        updateSongDisplay();
+    }
+
+    function changeSong(change:Int) {
+        if (change != 0) TBSMain.playSound("scrollMenuTBS");
+
+        var currentIndex = songs.indexOf(currentSong);
+        var newIndex = (currentIndex + change) % songs.length;
+        if (newIndex < 0) newIndex = songs.length + newIndex;
+
+        currentSong = songs[newIndex];
+        setRemSongId(currentSong);
+
+        updateSongDisplay();
+    }
+
+    function initLevels() {
+        for (week in TBSConstants.TBS_WEEKS) {
+            var level = LevelRegistry.instance.fetchEntry(week);
+            levels.push(level);
+            if (level.id == rememberedLevelId) currentLevel = level;
         }
+
+        if (currentLevel == null) currentLevel = levels[0];
+
+        refreshSongsList();
+        updateLevelDisplay();
+
+        var songIndex = songs.indexOf(rememberedSongId);
+        currentSong = songIndex >= 0 ? rememberedSongId : songs[0];
+
+        updateSongDisplay();
+    }
+
+    function updateLevelDisplay() {
+        var currentIndex = levels.indexOf(currentLevel);
+        var title = currentLevel.getTitle();
+
+        levelText.text = "< " + title + " > ";
+        if (currentIndex == 0) levelText.text = title + " >";
+        else if (levels.length == currentIndex + 1) levelText.text = "< " + title + " ";
+    }
+
+    function updateSongDisplay() {
+        FlxG.camera.stopFade();
+        FlxG.camera.fade(FlxColor.BLACK, 1, true);
+
+        var picture = getSongPicture();
+        var title = currentSong == "???" ? "Unknown" : currentSong;
+
+        songChar.loadTexture('freeplay/pictures/' + picture);
+        songTitle.loadTexture("freeplay/songs/" + title);
+
+        // Update song title position
+        songTitle.screenCenter(0x10);
+        compTxt.y = songTitle.height + 440;
+
+        var songName = Level.getSongDisplayName(currentSong, DIFFICULTIES[0]);
+        if (songName == "Unknown") songName = "???";
+        WindowUtil.setWindowTitle("The Basement Show: Freeplay " + (levels.indexOf(currentLevel) + 1) + ": " + currentLevel.getTitle() + " - " + songName);
+    }
+
+    function getSongPicture():String {
+        return switch (currentLevel.id) {
+            case "week2-tbs": "blue-tom";
+            case "week3-tbs": "funny-cartoon";
+            default: currentSong == "???" ? "Unknown" : currentSong;
+        }
+    }
+
+    function refreshSongsList() {
+        songs = [];
+        for (song in currentLevel.getSongs()) songs.push(song);
+
+        // Special case for week5
+        if (currentLevel.id == "week5-tbs") {
+            songs.push("Unknown");
+            songs.push("Unknown");
+        }
+    }
+
+    function loadRememberedData() {
+        rememberedLevelId = remLevelId() ?? rememberedLevelId;
+        rememberedSongId = remSongId() ?? rememberedSongId;
+    }
+
+    function goBack() {
+        TBSMain.playMenuMusic("freakyMenuTBS");
+        TBSMain.playSound("cancelMenuTBS");
+        TBSCustomFade.switchState(new TBSMainMenu());
+    }
+
+    public override function destroy() {
+        shaderVCR = shaderGlow = null;
+        levels = null;
+        super.destroy();
     }
 }
