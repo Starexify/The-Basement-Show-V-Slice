@@ -1,10 +1,14 @@
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import funkin.FunkinMemory;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ScriptedModule;
+import funkin.play.PauseSubState;
 import funkin.play.PlayState;
+import funkin.ui.FullScreenScaleMode;
 import funkin.util.WindowUtil;
 import openfl.filters.ShaderFilter;
 
@@ -87,6 +91,27 @@ class TBSHud extends ScriptedModule {
         tvShader.update(event.elapsed);
     }
 
+    override public function onSubStateOpenEnd(event:SubStateScriptEvent) {
+        if (playState == null) return;
+        if (!SONG_LIST.contains(playState.currentSong.id)) return;
+        if (!(event.targetState is PauseSubState)) return;
+        openPause(new TBSPauseSubState(event.targetState, event.targetState.currentMode), FullScreenScaleMode.hasFakeCutouts ? playState.camCutouts : playState.camCutscene);
+    }
+
+    override public function onSubStateOpenBegin(event:SubStateScriptEvent) {
+        if (playState == null) return;
+        if (!SONG_LIST.contains(playState.currentSong.id)) return;
+        if (!(event.targetState is PauseSubState)) return;
+    }
+
+    function openPause(pauseSubState, cam:FlxCamera) {
+        FlxTransitionableState.skipNextTransIn = true;
+        FlxTransitionableState.skipNextTransOut = true;
+        pauseSubState.camera = cam;
+        playState.persistentUpdate = false;
+        playState.openSubState(pauseSubState);
+    }
+
     override public function onSongRetry(event:SongRetryEvent) {
         if (playState == null) return;
 
@@ -95,7 +120,7 @@ class TBSHud extends ScriptedModule {
             if (cam.filters != null) cam.filters = [];
             else cam.filters = [];
         }
-        songCard.destroy();
+        if (songCard != null) songCard.destroy();
     }
 
     override public function onDestroy(event:ScriptEvent) {
