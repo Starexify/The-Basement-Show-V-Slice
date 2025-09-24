@@ -2,7 +2,7 @@
   "props": [
     {
       "zIndex": 10,
-      "position": [-800, -450],
+      "position": [-730, -360],
       "name": "basement",
       "assetPath": "stages/basement",
       "scroll": [1.1, 1.1]

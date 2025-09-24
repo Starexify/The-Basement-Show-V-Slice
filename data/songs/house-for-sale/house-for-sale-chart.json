@@ -1,246 +1,368 @@
 {
   "version": "2.0.0",
-  "scrollSpeed": {
-    "normal": 2.9
-  },
+  "scrollSpeed": { "normal": 2.9 },
   "events": [
+    {
+      "t": 0,
+      "e": "ZoomCamera",
+      "v": {
+        "duration": 0,
+        "ease": "cubeOut",
+        "zoom": 1.3,
+        "mode": "direct"
+      }
+    },
     {
       "t": 0,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
+    },
+    {
+      "t": 107.142857142857,
+      "e": "ZoomCamera",
+      "v": {
+        "duration": 89,
+        "ease": "cubeOut",
+        "zoom": 0.75,
+        "mode": "direct"
+      }
+    },
+    {
+      "t": 3428.57142857143,
+      "e": "FocusCamera",
+      "v": {
+        "char": 0
+      }
+    },
+    {
+      "t": 6857.14285714286,
+      "e": "FocusCamera",
+      "v": {
+        "char": 1
+      }
+    },
+    {
+      "t": 10285.7142857143,
+      "e": "FocusCamera",
+      "v": {
+        "char": 0
+      }
+    },
+    {
+      "t": 13714.2857142857,
+      "e": "ZoomCamera",
+      "v": {
+        "duration": 4.5,
+        "ease": "cubeOut",
+        "zoom": 0.9,
+        "mode": "direct"
+      }
+    },
+    {
+      "t": 13714.2857142857,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1
+      }
     },
     {
       "t": 17142.8571428571,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 20571.4285714286,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 24000,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 27428.5714285714,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
+    },
+    {
+      "t": 27428.5714285714,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1
+      }
     },
     {
       "t": 30857.1428571429,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 34285.7142857143,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 37714.2857142857,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
+    },
+    {
+      "t": 41142.8571428571,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1
+      }
     },
     {
       "t": 42000,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 45428.5714285714,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 48000,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 51428.5714285715,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
+    },
+    {
+      "t": 54857.1428571429,
+      "e": "Darkness",
+      "v": {
+        "duration": 0.5,
+        "fadeIn": true
+      }
+    },
+    {
+      "t": 54857.1428571429,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1
+      }
     },
     {
       "t": 54857.1428571429,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 56571.4285714286,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 58285.7142857143,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 60000,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 61714.2857142858,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 63428.5714285715,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 65142.8571428572,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 66857.1428571429,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
+    },
+    {
+      "t": 68571.4285714286,
+      "e": "Darkness",
+      "v": {
+        "duration": 0.5,
+        "fadeIn": false
+      }
+    },
+    {
+      "t": 68571.4285714286,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1
+      }
     },
     {
       "t": 68571.4285714286,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 72000,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 75428.5714285714,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 78857.1428571428,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
+    },
+    {
+      "t": 82285.7142857143,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1
+      }
     },
     {
       "t": 82285.7142857143,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 85714.2857142858,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 89142.8571428572,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 92571.4285714286,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
-      "t": 96857.1428571429,
+      "t": 96000,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1
+      }
+    },
+    {
+      "t": 96000,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 100285.714285714,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     },
     {
       "t": 102857.142857143,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 106285.714285714,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
+    },
+    {
+      "t": 109714.285714286,
+      "e": "CameraFlash",
+      "v": {
+        "alpha": 100,
+        "duration": 1
+      }
     },
     {
       "t": 109714.285714286,
       "e": "FocusCamera",
       "v": {
-	"char": 1
-}
+        "char": 1
+      }
     },
     {
       "t": 111428.571428571,
       "e": "FocusCamera",
       "v": {
-	"char": 0
-}
+        "char": 0
+      }
     }
   ],
   "notes": {

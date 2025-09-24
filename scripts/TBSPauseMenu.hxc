@@ -6,6 +6,7 @@ import flixel.text.FlxTextBorderStyle;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
@@ -20,8 +21,11 @@ import haxe.ui.util.MathUtil;
 
 class TBSPauseMenu extends ScriptedModule {
     var playState(get, never):PlayState;
-
     function get_playState():PlayState { return PlayState.instance; }
+
+    var wasPaused(get, set):Bool;
+    function set_wasPaused(value:Bool) { ModStore.stores.set("wasPausedTBS", value); }
+    function get_wasPaused():Bool { return ModStore.get("wasPausedTBS"); }
 
     public static var BLOCK_ENTRIES:Array<String> = ["Enable Practice Mode"];
 
@@ -32,11 +36,19 @@ class TBSPauseMenu extends ScriptedModule {
     var char2:FunkinSprite;
     var char3:FunkinSprite;
 
+    var timeText:FlxText;
     var boxGrowProgress:Float = 0;
 
     override public function onUpdate(event:UpdateScriptEvent) {
-        if (!(FlxG.state.subState is PauseSubState) || !TBSHud.SONG_LIST.contains(playState.currentSong.id)) return;
-        var pauseState:PauseSubState = FlxG.state.subState;
+        if (playState == null || !TBSHud.SONG_LIST.contains(playState.currentSong.id)) return;
+        var subState = FlxG.state.subState;
+        if (subState == null) return;
+
+        var pauseState:PauseSubState = null;
+        if (subState is PauseSubState) pauseState = subState;
+        else if (subState.subState is PauseSubState) pauseState = subState.subState;
+
+        if (!(pauseState is PauseSubState)) return;
 
         if (box != null) {
             boxGrowProgress += event.elapsed * 0.25;
@@ -47,19 +59,10 @@ class TBSPauseMenu extends ScriptedModule {
 
         if (arrow != null) {
             var lerpVal:Float = MathUtil.clamp(event.elapsed * 18.6, 0, 1);
-            if (pauseState.currentEntry == 0) {
-                arrow.y = FlxMath.lerp(arrow.y, -5, lerpVal);
-                arrow.x = FlxMath.lerp(arrow.x, 260 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), lerpVal);
-            } else if (pauseState.currentEntry == 1) {
-                arrow.y = FlxMath.lerp(arrow.y, 62, lerpVal);
-                arrow.x = FlxMath.lerp(arrow.x, 219, lerpVal);
-            } else if (pauseState.currentEntry == 2) {
-                arrow.y = FlxMath.lerp(arrow.y, 122, lerpVal);
-                arrow.x = FlxMath.lerp(arrow.x, 255, lerpVal);
-            } else if (pauseState.currentEntry == 3) {
-                arrow.y = FlxMath.lerp(arrow.y, 184, lerpVal);
-                arrow.x = FlxMath.lerp(arrow.x, 219, lerpVal);
-            }
+            var entry = pauseState.menuEntryText.members[pauseState.currentEntry];
+            var targetX = entry.x - arrow.width * 0.5 - 30;
+            var targetY = entry.y + entry.height * 0.5 - arrow.height * 0.5;
+            arrow.setPosition(FlxMath.lerp(arrow.x, targetX, lerpVal), FlxMath.lerp(arrow.y, targetY, lerpVal));
         }
 
         if (pauseState.controls.UI_UP_P) Timer.delay(() -> TBSMain.playScrollSound(0.4), 1);
@@ -97,6 +100,13 @@ class TBSPauseMenu extends ScriptedModule {
         bg.alpha = 0;
         bg.scrollFactor.set();
         state.add(bg);
+
+        timeText = new FlxText(0, 50, 0, "", 64);
+        timeText.setFormat(Paths.font("TBS.ttf"), 44, FlxColor.WHITE, "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+        timeText.scrollFactor.set();
+        timeText.borderSize = 2;
+        timeText.text = FlxStringUtil.formatTime(Math.max(0, Math.floor(playState.conductorInUse.songPosition / 1000)), false) + ' - ' + FlxStringUtil.formatTime(Math.max(0, Math.floor(playState.currentSongLengthMs / 1000)), false);
+        state.add(timeText);
 
         box = FunkinSprite.create(0 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), 0, "pause/box");
         box.scale.set(0.2, 0.21);
@@ -164,6 +174,8 @@ class TBSPauseMenu extends ScriptedModule {
                 text.screenCenter(0x01);
                 text.scrollFactor.set(0, 0);
                 text.alpha = 0;
+                text.updateHitbox();
+                if (entry.text.length > 17) text.scale.set(0.65, 0.65);
 
                 pauseState.menuEntryText.add(text);
 
@@ -189,10 +201,4 @@ class TBSPauseMenu extends ScriptedModule {
         pauseState.pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseState.pauseMusic.length / 2)));
         pauseState.pauseMusic.fadeIn(PauseSubState.MUSIC_FADE_IN_TIME, 0, PauseSubState.MUSIC_FINAL_VOLUME);
     }
-
-    var wasPaused(get, set):Bool;
-
-    function set_wasPaused(value:Bool) { ModStore.stores.set("wasPausedTBS", value); }
-
-    function get_wasPaused():Bool { return ModStore.get("wasPausedTBS"); }
 }

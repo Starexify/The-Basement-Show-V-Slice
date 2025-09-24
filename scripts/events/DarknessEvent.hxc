@@ -1,0 +1,71 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import funkin.data.event.SongEventSchema;
+import funkin.play.event.ScriptedSongEvent;
+import funkin.play.PlayState;
+
+class DarknessEvent extends ScriptedSongEvent {
+    var bg:FlxSprite;
+
+    public function new() {
+        super("Darkness");
+    }
+
+    override public function handleEvent(data:SongEventData) {
+        if (PlayState.instance == null) return;
+        var playState = PlayState.instance;
+
+        var fadeIn = data.getBool("fadeIn") ?? true;
+        var duration = data.getFloat("duration") ?? 1;
+
+        var gf = playState.currentStage.getGirlfriend();
+
+        if (bg == null) {
+            var cam = playState.camGame;
+
+            bg = new FlxSprite();
+            bg.makeGraphic(cam.width, cam.height, FlxColor.BLACK);
+            bg.scrollFactor.set(0, 0);
+            bg.scale.set(1.5, 1.5);
+            bg.setPosition(0, 0);
+            bg.zIndex = 101;
+            playState.currentStage.add(bg);
+            playState.currentStage.refresh();
+        }
+
+        if (fadeIn) {
+            FlxTween.tween(bg, { alpha: 0.75 }, duration, { ease: FlxEase.linear });
+            FlxTween.tween(gf, { alpha: 0.25 }, duration, { ease: FlxEase.linear });
+        } else {
+            FlxTween.tween(bg, { alpha: 0 }, duration, { ease: FlxEase.linear });
+            FlxTween.tween(gf, { alpha: 1 }, duration, { ease: FlxEase.linear });
+        }
+    }
+
+    override public function getEventSchema():SongEventSchema {
+        return [
+            {
+                name: "fadeIn",
+                title: "Fade In",
+                defaultValue: true,
+                type: "bool"
+            },
+            {
+                name: "duration",
+                title: "Duration",
+                defaultValue: 1.0,
+                min: 0,
+                step: 0.1,
+                type: "float",
+                units: "s"
+            }
+        ];
+    }
+
+    override public function getTitle():String {
+        return "Darkness";
+    }
+}
