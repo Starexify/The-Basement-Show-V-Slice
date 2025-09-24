@@ -2,18 +2,32 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.modding.events.ScriptEvent;
+import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
 import funkin.play.song.ScriptedSong;
 
 class HouseForSale extends ScriptedSong {
+    var hasPlayedCutscene:Bool;
+
     function new() {
         super("house-for-sale");
     }
 
-    override public function onSongLoaded(event:SongLoadScriptEvent):Void {
-        PlayState.instance.camHUD.alpha = 0;
-        PlayState.instance.camCutscene.stopFade();
-        PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0, false);
+    override public function onCreate(event:ScriptEvent) {
+        hasPlayedCutscene = false;
+    }
+
+    override public function onCountdownStart(event:CountdownScriptEvent) {
+        if (!hasPlayedCutscene && PlayStatePlaylist.isStoryMode) {
+            hasPlayedCutscene = true;
+            event.cancel();
+            VideoCutscene.play(Paths.videos("W1"));
+        } else {
+            PlayState.instance.camHUD.alpha = 0;
+            PlayState.instance.camCutscene.stopFade();
+            PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0, false);
+        }
     }
 
     override public function onStepHit(event:SongTimeScriptEvent):Void {
@@ -25,5 +39,9 @@ class HouseForSale extends ScriptedSong {
             case 28: FlxTween.tween(PlayState.instance.camHUD, {alpha: 1}, 0.5, {ease:FlxEase.linear});
             case 280: FlxTween.tween(PlayState.instance.camHUD, {alpha: 0}, 0.5, {ease:FlxEase.linear});
         }
+    }
+
+    override public function onSongRetry(event:SongRetryEvent):Void {
+        hasPlayedCutscene = true;
     }
 }
