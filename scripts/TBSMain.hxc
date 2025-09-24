@@ -58,7 +58,7 @@ class TBSMain extends ScriptedModule {
 
         if (FlxG.state.subState is FreeplayState) {
             var freeplay:FreeplayState = FlxG.state.subState;
-            if (!TBSConstants.TBS_WEEKS.contains(freeplay.currentCapsule.freeplayData.levelId)) return;
+            if (!TBSConstants.TBS_WEEKS.contains(freeplay.currentCapsule.freeplayData?.levelId)) return;
             playConfirmSound();
             if (prevCapsule == freeplay.curSelected) return;
             prevCapsule = freeplay.curSelected;
@@ -253,10 +253,10 @@ class TBSMain extends ScriptedModule {
             }
     }
 
-    public static function playScrollSound() {
+    public static function playScrollSound(volume:Float) {
         // Stop any existing scroll sounds
         for (sound in FunkinSound.pool) if (StringTools.contains(sound._label, "scrollMenu.ogg")) sound.stop();
-        FunkinSound.playOnce(Paths.sound("scrollMenuTBS"));
+        FunkinSound.playOnce(Paths.sound("scrollMenuTBS"), volume ?? 1);
     }
 
     public static function playSound(key:String, ?volume:Float) {

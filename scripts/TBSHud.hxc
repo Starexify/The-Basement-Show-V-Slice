@@ -1,14 +1,10 @@
-import flixel.addons.transition.FlxTransitionableState;
-import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import funkin.FunkinMemory;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.ScriptedModule;
-import funkin.play.PauseSubState;
 import funkin.play.PlayState;
-import funkin.ui.FullScreenScaleMode;
 import funkin.util.WindowUtil;
 import openfl.filters.ShaderFilter;
 
@@ -35,8 +31,10 @@ class TBSHud extends ScriptedModule {
         if (playState == null) return;
         if (!SONG_LIST.contains(playState.currentSong.id)) return;
 
-        TBSMain.setInTBSMenu(false);
-        TBSMain.setInTBSState(true);
+        if (TBSMain.inTBSMenu()) {
+            TBSMain.setInTBSMenu(false);
+            TBSMain.setInTBSState(true);
+        }
 
         WindowUtil.setWindowTitle("The Basement Show - Now Playing: " + playState.currentSong.songName + " - By: " + playState.currentSong.songArtist);
 
@@ -89,27 +87,6 @@ class TBSHud extends ScriptedModule {
     override public function onUpdate(event:UpdateScriptEvent) {
         if (playState == null || tvShader == null) return;
         tvShader.update(event.elapsed);
-    }
-
-    override public function onSubStateOpenEnd(event:SubStateScriptEvent) {
-        if (playState == null) return;
-        if (!SONG_LIST.contains(playState.currentSong.id)) return;
-        if (!(event.targetState is PauseSubState)) return;
-        openPause(new TBSPauseSubState(event.targetState, event.targetState.currentMode), FullScreenScaleMode.hasFakeCutouts ? playState.camCutouts : playState.camCutscene);
-    }
-
-    override public function onSubStateOpenBegin(event:SubStateScriptEvent) {
-        if (playState == null) return;
-        if (!SONG_LIST.contains(playState.currentSong.id)) return;
-        if (!(event.targetState is PauseSubState)) return;
-    }
-
-    function openPause(pauseSubState, cam:FlxCamera) {
-        FlxTransitionableState.skipNextTransIn = true;
-        FlxTransitionableState.skipNextTransOut = true;
-        pauseSubState.camera = cam;
-        playState.persistentUpdate = false;
-        playState.openSubState(pauseSubState);
     }
 
     override public function onSongRetry(event:SongRetryEvent) {

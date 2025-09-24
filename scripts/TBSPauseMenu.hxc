@@ -1,0 +1,198 @@
+import flixel.FlxG;
+import flixel.group.FlxTypedSpriteGroup;
+import flixel.math.FlxMath;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.ModStore;
+import funkin.modding.module.ScriptedModule;
+import funkin.play.PauseSubState;
+import funkin.play.PlayState;
+import funkin.ui.FullScreenScaleMode;
+import funkin.ui.options.OptionsState;
+import haxe.Timer;
+import haxe.ui.util.MathUtil;
+
+class TBSPauseMenu extends ScriptedModule {
+    var playState(get, never):PlayState;
+
+    function get_playState():PlayState { return PlayState.instance; }
+
+    public static var BLOCK_ENTRIES:Array<String> = ["Enable Practice Mode"];
+
+    var bg:FunkinSprite;
+    var box:FunkinSprite;
+    var arrow:FunkinSprite;
+    var char1:FunkinSprite;
+    var char2:FunkinSprite;
+    var char3:FunkinSprite;
+
+    var boxGrowProgress:Float = 0;
+
+    override public function onUpdate(event:UpdateScriptEvent) {
+        if (!(FlxG.state.subState is PauseSubState) || !TBSHud.SONG_LIST.contains(playState.currentSong.id)) return;
+        var pauseState:PauseSubState = FlxG.state.subState;
+
+        if (box != null) {
+            boxGrowProgress += event.elapsed * 0.25;
+            var fakeElapsed:Float = MathUtil.clamp(boxGrowProgress, 0, 1);
+            box.scale.x = FlxMath.lerp(box.scale.x, 0.6, fakeElapsed);
+            box.scale.y = FlxMath.lerp(box.scale.y, 0.62, fakeElapsed);
+        }
+
+        if (arrow != null) {
+            var lerpVal:Float = MathUtil.clamp(event.elapsed * 18.6, 0, 1);
+            if (pauseState.currentEntry == 0) {
+                arrow.y = FlxMath.lerp(arrow.y, -5, lerpVal);
+                arrow.x = FlxMath.lerp(arrow.x, 260 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), lerpVal);
+            } else if (pauseState.currentEntry == 1) {
+                arrow.y = FlxMath.lerp(arrow.y, 62, lerpVal);
+                arrow.x = FlxMath.lerp(arrow.x, 219, lerpVal);
+            } else if (pauseState.currentEntry == 2) {
+                arrow.y = FlxMath.lerp(arrow.y, 122, lerpVal);
+                arrow.x = FlxMath.lerp(arrow.x, 255, lerpVal);
+            } else if (pauseState.currentEntry == 3) {
+                arrow.y = FlxMath.lerp(arrow.y, 184, lerpVal);
+                arrow.x = FlxMath.lerp(arrow.x, 219, lerpVal);
+            }
+        }
+
+        if (pauseState.controls.UI_UP_P) Timer.delay(() -> TBSMain.playScrollSound(0.4), 1);
+        if (pauseState.controls.UI_DOWN_P) Timer.delay(() -> TBSMain.playScrollSound(0.4), 1);
+    }
+
+    override public function onSubStateOpenBegin(event:SubStateScriptEvent) {
+        if (!wasPaused) return;
+        if (event.targetState is PlayState) return;
+        FlxG.switchState(() -> new PlayState(PlayState.lastParams));
+        wasPaused = false;
+    }
+
+    override public function onSubStateOpenEnd(event:SubStateScriptEvent) {
+        if (playState == null) return;
+        if (!TBSHud.SONG_LIST.contains(playState.currentSong.id)) return;
+        if (!(event.targetState is PauseSubState)) return;
+        var pauseState:PauseSubState = event.targetState;
+        boxGrowProgress = 0;
+        startPauseMusic(pauseState);
+        buildBackground(pauseState);
+        clearAndAddMenuEntries(pauseState);
+        pauseState.menuEntryText.zIndex = 100;
+        pauseState.metadata.forEach(text -> text.font = Paths.font("TBS.ttf"));
+        pauseState.metadata.zIndex = 100;
+        pauseState.refresh();
+
+        TBSMain.playSound("scrollMenuTBS");
+
+        FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+    }
+
+    function buildBackground(state:PauseSubState) {
+        bg = new FunkinSprite().makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+        bg.alpha = 0;
+        bg.scrollFactor.set();
+        state.add(bg);
+
+        box = FunkinSprite.create(0 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), 0, "pause/box");
+        box.scale.set(0.2, 0.21);
+        box.screenCenter();
+
+        arrow = FunkinSprite.create(219 + (FullScreenScaleMode.gameCutoutSize.x * 0.5), 0, "pause/arrow");
+        arrow.alpha = 0;
+        arrow.scale.set(0.07, 0.07);
+
+        char1 = new FunkinSprite();
+        char1.alpha = 0;
+
+        char2 = FunkinSprite.create(519, -55, "pause/right");
+        char2.alpha = 0;
+        char2.scale.set(0.5, 0.5);
+
+        char3 = new FunkinSprite(569, -245);
+        char3.alpha = 0;
+        char3.scale.set(0.5, 0.5);
+
+        FlxTween.tween(char1, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
+        FlxTween.tween(char2, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
+        FlxTween.tween(char3, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
+        FlxTween.tween(arrow, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
+
+        switch (PlayState.instance.currentSong.id) {
+            case "house-for-sale":
+                char1.loadTexture("pause/left");
+                char1.x -= 220;
+                char1.y += 50;
+                char3.loadTexture("pause/right2");
+                FlxTween.tween(char1, {x: -20}, 0.2, {ease: FlxEase.sineInOut});
+                FlxTween.tween(char2, {x: 319 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
+                FlxTween.tween(char3, {x: 369 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
+        }
+
+        state.add(char1);
+        state.add(char3);
+        state.add(char2);
+        state.add(box);
+        state.add(arrow);
+    }
+
+    function clearAndAddMenuEntries(pauseState:PauseSubState) {
+        pauseState.menuEntryText.clear();
+        if (pauseState.menuEntryText == null) {
+            pauseState.menuEntryText = new FlxTypedSpriteGroup();
+            pauseState.menuEntryText.scrollFactor.set(0, 0);
+            pauseState.add(pauseState.menuEntryText);
+        }
+        var entryIndex:Int = 0;
+        var toRemove = [];
+        pauseState.currentMenuEntries = pauseState.currentMenuEntries.map(entry -> {
+            if (entry.text == "Change Difficulty") {
+                return {sprite: entry.sprite, text: "Options", callback: state -> openOptions(state)};
+            }
+            return entry;
+        });
+
+        for (entry in pauseState.currentMenuEntries) {
+            if (entry == null || BLOCK_ENTRIES.contains(entry.text)) toRemove.push(entry);
+            else {
+                var text:FlxText = new FlxText(0, 250 + (entryIndex * 62), 0, entry.text);
+                text.setFormat(Paths.font("tbs.ttf"), 36, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+                text.screenCenter(0x01);
+                text.scrollFactor.set(0, 0);
+                text.alpha = 0;
+
+                pauseState.menuEntryText.add(text);
+
+                FlxTween.tween(text, {alpha: 1}, (entryIndex * 0) + 0.1, {ease: FlxEase.sineInOut});
+
+                entryIndex++;
+            }
+        }
+        for (entry in toRemove) pauseState.currentMenuEntries.remove(entry);
+    }
+
+    function openOptions(state:PauseSubState) {
+        wasPaused = true;
+        FlxG.switchState(() -> {
+            TBSMain.playMenuMusic("basementMenu");
+            return new OptionsState();
+        });
+    }
+
+    function startPauseMusic(pauseState:PauseSubState) {
+        pauseState.pauseMusic.stop();
+        pauseState.pauseMusic = FunkinSound.load(Paths.music("pauseTBS"), true, true);
+        pauseState.pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseState.pauseMusic.length / 2)));
+        pauseState.pauseMusic.fadeIn(PauseSubState.MUSIC_FADE_IN_TIME, 0, PauseSubState.MUSIC_FINAL_VOLUME);
+    }
+
+    var wasPaused(get, set):Bool;
+
+    function set_wasPaused(value:Bool) { ModStore.stores.set("wasPausedTBS", value); }
+
+    function get_wasPaused():Bool { return ModStore.get("wasPausedTBS"); }
+}
