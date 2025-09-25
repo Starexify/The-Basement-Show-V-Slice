@@ -1,3 +1,4 @@
+import funkin.data.event.SongEventSchema;
 import funkin.graphics.FunkinSprite;
 import funkin.play.event.ScriptedSongEvent;
 import funkin.play.PlayState;
@@ -6,7 +7,7 @@ class DodgeEvent extends ScriptedSongEvent {
     public static var instance:DodgeEvent;
 
     var spacebar:FunkinSprite;
-    var dodgeTimer:Float = 1.5;
+    var dodgeTimer:Float = 1;
     var canDodge:Bool = false;
     var dodged:Bool = false;
 
@@ -18,7 +19,8 @@ class DodgeEvent extends ScriptedSongEvent {
     override public function handleEvent(data:SongEventData) {
         if (PlayState.instance == null) return;
         var playState = PlayState.instance;
-        dodgeTimer = 1.5;
+
+        dodgeTimer = data.getFloat("timer") ?? 1;
         canDodge = true;
         dodged = false;
 
@@ -30,10 +32,25 @@ class DodgeEvent extends ScriptedSongEvent {
             spacebar.screenCenter();
         }
         playState.currentStage.getDad().playAnimation("hey", true);
-        spacebar.animation.play("spacebar");
         playState.add(spacebar);
 
+        spacebar.animation.play("spacebar");
+
         TBSMain.playSound("DODGE");
+    }
+
+    override public function getEventSchema():SongEventSchema {
+        return [
+            {
+                name: "timer",
+                title: "Dodge Timer",
+                defaultValue: 1.0,
+                min: 0.1,
+                step: 0.1,
+                type: "float",
+                units: "s"
+            }
+        ];
     }
 
     override public function getTitle():String {

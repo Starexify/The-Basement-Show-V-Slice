@@ -8,8 +8,9 @@
       "t": 5647.05882352941,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 4,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
@@ -60,64 +61,72 @@
       "t": 16941.1764705882,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 4,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 21882.3529411765,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 21970.5882352941,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 22235.2941176471,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 22323.5294117647,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 22411.7647058824,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 22500,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 22588.2352941176,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
@@ -190,88 +199,99 @@
       "t": 69970.588235294,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70058.8235294117,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70147.0588235293,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70235.294117647,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70279.4117647058,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70323.5294117646,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70367.6470588235,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70411.7647058823,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70455.8823529411,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70499.9999999999,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 70544.1176470587,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
@@ -316,32 +336,36 @@
       "t": 75882.3529411764,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 75970.588235294,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 76058.8235294117,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 76147.0588235293,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
@@ -375,8 +399,9 @@
       "t": 86117.6470588234,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
@@ -388,48 +413,54 @@
       "t": 86338.2352941175,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 86558.8235294116,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 86823.5294117646,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 87044.1176470587,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 87264.7058823528,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {
       "t": 87529.4117647058,
       "e": "CameraFlash",
       "v": {
+        "alpha": 100,
         "duration": 0.1,
-        "color": "#000000"
+        "color": "000000"
       }
     },
     {

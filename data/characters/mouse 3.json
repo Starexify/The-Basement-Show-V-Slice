@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0",
+  "name": "Mouse Dark (PH3)",
+  "assetPath": "characters/Basement Mouse PH3",
+  "singTime": 6.1,
+  "scale": 0.7,
+  "healthIcon": {
+    "id": "mouse-p3"
+  },
+  "offsets": [-70, 250],
+  "healthColor": [170, 95, 27],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "I0",
+      "offsets": [-152, 207],
+      "frameRate": 10
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "L0",
+      "offsets": [-29, 231],
+      "frameRate": 18
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "D0",
+      "offsets": [-110, 229],
+      "frameRate": 18
+    },
+    {
+      "name": "singUP",
+      "prefix": "U0",
+      "offsets": [-116, 234],
+      "frameRate": 18
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "R0",
+      "offsets": [-143, 225],
+      "frameRate": 18
+    },
+    {
+      "name": "hey",
+      "prefix": "A0",
+      "frameRate": 16,
+      "offsets": [-143, 190]
+    },
+    {
+      "name": "attack",
+      "prefix": "B0",
+      "frameRate": 16,
+      "offsets": [-135, 190]
+    }
+  ]
+}

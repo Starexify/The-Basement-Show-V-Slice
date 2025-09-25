@@ -38,7 +38,7 @@
       "cameraOffsets": [-100, -100]
     },
     "dad": {
-      "zIndex": 200,
+      "zIndex": 301 ,
       "position": [335, 865],
       "cameraOffsets": [150, -100]
     },
