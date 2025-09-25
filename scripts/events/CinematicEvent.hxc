@@ -48,7 +48,7 @@ class CinematicEvent extends ScriptedSongEvent {
                 title: "Fade In",
                 defaultValue: true,
                 type: "bool"
-            },
+            }
         ];
     }
 

@@ -1,0 +1,82 @@
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import funkin.data.event.SongEventSchema;
+import funkin.graphics.FunkinSprite;
+import funkin.play.event.ScriptedSongEvent;
+import funkin.play.PlayState;
+
+class ImageFlashEvent extends ScriptedSongEvent {
+    function new() {
+        super("ImageFlash");
+    }
+
+    override public function handleEvent(data:SongEventData) {
+        if (PlayState.instance == null) return;
+        var playState = PlayState.instance;
+
+        var imgKey = data.getString("key");
+        if (imgKey == null) return;
+
+        var duration = data.getFloat("duration") ?? 0.3;
+        var delay = data.getFloat("delay") ?? 0;
+
+        var addBg = data.getBool("addBg") ?? false;
+        if (addBg) {
+            var blackBg = new FunkinSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+            blackBg.scrollFactor.set(0, 0);
+            blackBg.camera = playState.camCutscene;
+            playState.add(blackBg);
+
+            FlxTween.tween(blackBg, { alpha: 0 }, duration, { ease: FlxEase.linear, startDelay: delay, onComplete: t -> blackBg.destroy() });
+        }
+
+        var image = FunkinSprite.create(0, 0, imgKey);
+        image.screenCenter(0x01);
+        image.scrollFactor.set(0, 0);
+        image.camera = playState.camCutscene;
+        playState.add(image);
+
+        FlxTween.tween(image, { alpha: 0 }, duration, { ease: FlxEase.linear, startDelay: delay, onComplete: t -> image.destroy() });
+    }
+
+    override public function getEventSchema():SongEventSchema {
+        return [
+            {
+                name: "key",
+                title: "Image Key",
+                defaultValue: "",
+                type: "string"
+            },
+            {
+                name: "duration",
+                title: "Duration",
+                defaultValue: 0.3,
+                min: 0,
+                step: 0.1,
+                type: "float",
+                units: "s"
+            },
+            {
+                name: "delay",
+                title: "Fade Out Delay",
+                defaultValue: 0,
+                min: 0,
+                step: 0.1,
+                type: "float",
+                units: "s"
+            },
+            {
+                name: "addBg",
+                title: "Add Background",
+                defaultValue: false,
+                type: "bool"
+            }
+        ];
+    }
+
+    override public function getTitle():String {
+        return "Image Flash";
+    }
+}

@@ -7,7 +7,10 @@ import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
 import funkin.play.song.ScriptedSong;
 import funkin.util.Constants;
 
@@ -26,18 +29,17 @@ class Sirokou extends ScriptedSong {
     var rtxBF:BaseCharacter;
     var rtxGF:BaseCharacter;
     var warning:FunkinSprite;
+    var shade:FunkinSprite;
 
     var centeredStrum:Bool = false;
+
+    var hasPlayedCutscene:Bool = false;
 
     function new() {
         super("sirokou");
     }
 
-    override public function onCreate(event:ScriptEvent):Void {
-        warning = FunkinSprite.create(0, 0, "warningimage");
-        warning.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
-        playState.add(warning);
-
+    override public function onCreate(event:ScriptEvent) {
         jerry = CharacterDataParser.fetchCharacter("mouse 3");
         jerry.ignoreExclusionPref = [];
         bf = playState.currentStage.getBoyfriend();
@@ -59,9 +61,17 @@ class Sirokou extends ScriptedSong {
     }
 
     override public function onSongLoaded(event:SongLoadScriptEvent) {
+        shade = FunkinSprite.create(0, 0, "shade2");
+        shade.camera = playState.camHUD;
+        playState.add(shade);
+
+        warning = FunkinSprite.create(0, 0, "warningimage");
+        warning.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+        playState.add(warning);
+
         PlayState.instance.camHUD.alpha = 0;
         PlayState.instance.camCutscene.stopFade();
-        PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0, false);
+        PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0);
 
         playState.currentStage.getNamedProp("basementLight").visible = false;
     }
@@ -192,5 +202,17 @@ class Sirokou extends ScriptedSong {
         FlxTween.tween(playState.opponentStrumline.background, {x: -1000}, 1, {ease: FlxEase.quadInOut});
         FlxTween.tween(playState.playerStrumline, {x: playState.playerStrumline.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET}, 1, {ease: FlxEase.quadInOut });
         FlxTween.tween(playState.playerStrumline.background, {alpha: 0, x: playState.playerStrumline.background.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET}, 1, {ease: FlxEase.quadInOut });
+    }
+
+    override public function onSongEnd(event:ScriptEvent) {
+        if (warning != null) warning.destroy();
+        warning = null;
+
+        if (!PlayStatePlaylist.isStoryMode) return;
+        if (!hasPlayedCutscene) {
+            event.cancel();
+            VideoCutscene.play(Paths.videos("W1 End"), CutsceneType.ENDING);
+            hasPlayedCutscene = true;
+        }
     }
 }

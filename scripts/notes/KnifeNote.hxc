@@ -1,0 +1,31 @@
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.notes.notekind.ScriptedNoteKind;
+import funkin.play.PlayState;
+
+class KnifeNote extends ScriptedNoteKind {
+    var jerry:FunkinSprite;
+
+    function new() {
+        super("Knife", "Knife Notes", "knife");
+        jerry = FunkinSprite.create(0, 0, "JS_Jerry_Wide");
+        jerry.alpha = 0;
+    }
+
+    override public function onNoteHit(event:HitNoteScriptEvent) {
+        TBSMain.playSound("jerry");
+        FlxTween.cancelTweensOf(jerry);
+        jerry.alpha = 1;
+        jerry.screenCenter();
+        jerry.camera = PlayState.instance.camCutscene;
+        PlayState.instance.add(jerry);
+        FlxTween.tween(jerry, {alpha: 0}, 0.5, {ease: FlxEase.circOut, startDelay: 0.5, onComplete: t -> PlayState.instance.remove(jerry)});
+    }
+
+    override public function onNoteMiss(event:NoteScriptEvent) {
+        scoreable = false;
+        event.cancel();
+    }
+}

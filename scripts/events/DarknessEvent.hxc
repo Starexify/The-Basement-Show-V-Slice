@@ -9,7 +9,7 @@ import funkin.play.PlayState;
 class DarknessEvent extends ScriptedSongEvent {
     var bg:FlxSprite;
 
-    public function new() {
+    function new() {
         super("Darkness");
     }
 

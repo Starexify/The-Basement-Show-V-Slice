@@ -86,8 +86,6 @@ class Evaporate extends ScriptedSong {
         }
     }
 
-
-
     override public function onSongRetry(event:SongRetryEvent) {
         warning.alpha = 0;
     }

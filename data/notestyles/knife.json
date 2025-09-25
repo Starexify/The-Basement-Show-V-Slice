@@ -1,11 +1,11 @@
 {
   "version": "1.1.0",
-  "name": "The Basement Show'",
+  "name": "Knife",
   "author": "Unknown",
   "fallback": "funkin",
   "assets": {
     "note": {
-      "assetPath": "shared:basement_notes",
+      "assetPath": "shared:KNIFENOTE_assets",
       "scale": 0.7,
       "data": {
         "left": { "prefix": "purple" },
@@ -48,7 +48,7 @@
       "alpha": 0.8,
       "offsets": [0, 0],
       "data": {
-        "enabled": true,
+        "enabled": false,
         "leftSplashes": [
           { "prefix": "note impact 1 purple0" },
           { "prefix": "note impact 2 purple0" }
