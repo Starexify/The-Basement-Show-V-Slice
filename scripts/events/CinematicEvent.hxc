@@ -1,0 +1,58 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import funkin.data.event.SongEventSchema;
+import funkin.play.event.ScriptedSongEvent;
+import funkin.play.PlayState;
+
+class CinematicEvent extends ScriptedSongEvent {
+    var upperBar:FlxSprite;
+    var lowerBar:FlxSprite;
+
+    function new() {
+        super("Cinematic");
+    }
+
+    override public function handleEvent(data:SongEventData) {
+        if (PlayState.instance == null) return;
+        var fadeIn = data.getBool("fadeIn") ?? true;
+
+        var playState:PlayState = PlayState.instance;
+        if (upperBar == null || lowerBar == null) {
+            upperBar = new FlxSprite(-1, -120).makeGraphic(FlxG.width + 2, 120, FlxColor.BLACK);
+            lowerBar = new FlxSprite(-1, FlxG.height).makeGraphic(FlxG.width + 2, 120, FlxColor.BLACK);
+
+            playState.add(upperBar);
+            playState.add(lowerBar);
+        }
+
+        lowerBar.camera = upperBar.camera = playState.camHUD;
+        lowerBar.zIndex = upperBar.zIndex = playState.healthBar.zIndex - 1;
+        playState.refresh();
+
+        if (fadeIn) {
+            FlxTween.tween(upperBar, { y: -1 }, 0.5, { ease: FlxEase.linear });
+            FlxTween.tween(lowerBar, { y: FlxG.height - lowerBar.height + 1 }, 0.5, { ease: FlxEase.linear });
+        } else {
+            FlxTween.tween(upperBar, { y: -120 }, 0.5, { ease: FlxEase.linear, onComplete: _ -> upperBar.destroy() });
+            FlxTween.tween(lowerBar, { y: FlxG.height }, 0.5, { ease: FlxEase.linear, onComplete: _ -> lowerBar.destroy() });
+        }
+    }
+
+    override public function getEventSchema():SongEventSchema {
+        return [
+            {
+                name: "fadeIn",
+                title: "Fade In",
+                defaultValue: true,
+                type: "bool"
+            },
+        ];
+    }
+
+    override public function getTitle():String {
+        return "Cinematic Bars";
+    }
+}

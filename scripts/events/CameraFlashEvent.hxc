@@ -8,7 +8,7 @@ import funkin.play.event.ScriptedSongEvent;
 import funkin.play.PlayState;
 
 class CameraFlashEvent extends ScriptedSongEvent {
-    public function new() {
+    function new() {
         super("CameraFlash");
     }
 
@@ -38,16 +38,6 @@ class CameraFlashEvent extends ScriptedSongEvent {
                 step: 0.1,
                 type: "float",
                 units: "s"
-            },
-            {
-                name: "alpha",
-                title: "Opacity",
-                defaultValue: 25,
-                min: 0,
-                max: 100,
-                step: 1,
-                type: "integer",
-                units: "%"
             }
         ];
     }

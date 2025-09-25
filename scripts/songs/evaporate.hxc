@@ -1,0 +1,80 @@
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.data.character.CharacterDataParser;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.PlayState;
+import funkin.play.song.ScriptedSong;
+
+class Evaporate extends ScriptedSong {
+    var warning:FunkinSprite;
+
+    var playState(get, never):PlayState;
+    function get_playState():PlayState { return PlayState.instance; }
+
+    var angryJerry:BaseCharacter;
+
+    function new() {
+        super("evaporate");
+    }
+
+    override public function onCreate(event:ScriptEvent) {
+        warning = FunkinSprite.create(0, 0);
+        warning.loadSparrow("warningdodge");
+        warning.animation.addByPrefix("dodge", "warningdodge", 24, true);
+        warning.animation.play("dodge");
+        warning.camera = playState.camCutscene;
+        warning.alpha = 0;
+        playState.add(warning);
+
+        angryJerry = CharacterDataParser.fetchCharacter("mouse angry");
+    }
+
+    override public function onStepHit(event:SongTimeScriptEvent) {
+        switch (event.step) {
+            case 1: FlxTween.tween(warning, {alpha: 1}, 0.3, {});
+            case 48: FlxTween.tween(warning, {alpha: 0}, 0.3, {});
+            case 1016: FlxTween.tween(playState.camHUD, {alpha: 0.5}, 0.5, {});
+            case 1024: FlxTween.tween(playState.camHUD, {alpha: 1}, 0.5, {});
+        }
+
+        if (event.beat > 255 && event.beat <= 381) {
+            if (event.step % 4 == 0) {
+                FlxTween.tween(playState.camHUD, {y: 12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+                FlxTween.tween(playState.camGame.scroll, {y: -12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
+            }
+            if (event.step % 4 == 2) {
+                FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+                FlxTween.tween(playState.camGame.scroll, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
+            }
+        }
+
+        if (event.beat == 382) {
+            FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+            FlxTween.tween(playState.camGame.scroll, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
+        }
+    }
+
+    override public function onBeatHit(event:SongTimeScriptEvent) {
+        if (event.beat == 256 && angryJerry != null) {
+            playState.currentStage.remove(playState.currentStage.getDad());
+            playState.currentStage.addCharacter(angryJerry, CharacterType.DAD);
+        }
+    }
+
+    override public function onSongRetry(event:SongRetryEvent) {
+        warning.alpha = 0;
+    }
+
+    override public function onSongEnd(event:ScriptEvent) {
+        if (warning != null) warning.destroy();
+        warning = null;
+
+        event.cancel();
+        VideoCutscene.play(Paths.videos("Sirokou", CutsceneType.ENDING));
+    }
+}

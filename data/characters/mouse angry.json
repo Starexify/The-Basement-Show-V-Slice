@@ -1,0 +1,52 @@
+{
+  "version": "1.0.0",
+  "name": "Mouse Angry (PH2)",
+  "assetPath": "characters/Basement Mouse PH2",
+  "singTime": 4.7,
+  "scale": 0.475,
+  "offsets": [-70, 100],
+  "cameraOffsets": [100, 90],
+  "healthIcon": {
+    "id": "mouse-p2"
+  },
+  "healthColor": [160, 90, 23],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "I0",
+      "offsets": [200, 30],
+      "frameRate": 14
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "L0",
+      "offsets": [-156, -30],
+      "frameRate": 16
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "D0",
+      "offsets": [-204, -28],
+      "frameRate": 16
+    },
+    {
+      "name": "singUP",
+      "prefix": "U0",
+      "offsets": [-177, -29],
+      "frameRate": 16
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "R0",
+      "frameRate": 16,
+      "offsets": [-306, -15]
+    },
+    {
+      "name": "attack",
+      "prefix": "A0",
+      "frameIndices": [3, 4, 5, 6, 7],
+      "frameRate": 18,
+      "offsets": [-28, -195]
+    }
+  ]
+}
