@@ -38,15 +38,15 @@
     {
       "name": "singRIGHT",
       "prefix": "R0",
-      "frameRate": 16,
-      "offsets": [-306, -15]
+      "offsets": [-306, -15],
+      "frameRate": 16
     },
     {
       "name": "attack",
       "prefix": "A0",
       "frameIndices": [3, 4, 5, 6, 7],
       "frameRate": 18,
-      "offsets": [-28, -195]
+      "offsets": [145, -380]
     }
   ]
 }

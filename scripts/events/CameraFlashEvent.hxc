@@ -17,9 +17,11 @@ class CameraFlashEvent extends ScriptedSongEvent {
 
         var alpha = data.getInt("alpha") ?? 25;
         var duration = data.getFloat("duration") ?? 1;
+        var color = data.getString("color") ?? "FFFFFF";
+        trace(FlxColor.fromString(color));
 
         var overlay = new FlxSprite();
-        overlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.WHITE);
+        overlay.makeGraphic(FlxG.width, FlxG.height, color);
         overlay.scrollFactor.set(0, 0);
         overlay.camera = PlayState.instance.camHUD;
         overlay.alpha = alpha / 100;
@@ -38,6 +40,12 @@ class CameraFlashEvent extends ScriptedSongEvent {
                 step: 0.1,
                 type: "float",
                 units: "s"
+            },
+            {
+                name: "color",
+                title: "Color",
+                defaultValue: "FFFFFF",
+                type: "string"
             }
         ];
     }

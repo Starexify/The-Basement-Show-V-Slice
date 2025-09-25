@@ -12,7 +12,6 @@ class TBSHud extends ScriptedModule {
     public static var SONG_LIST:Array<String> = ["house-for-sale", "evaporate", "sirokou"];
 
     var playState(get, never):PlayState;
-
     function get_playState():PlayState { return PlayState.instance; }
 
     var bfHealthColor:Array<Int>;

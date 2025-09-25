@@ -4,7 +4,28 @@
       "zIndex": 10,
       "position": [-730, -360],
       "name": "basement",
-      "assetPath": "stages/basement",
+      "assetPath": "stages/basement/basement",
+      "scroll": [1.1, 1.1]
+    },
+    {
+      "zIndex": 9,
+      "position": [-730, -360],
+      "name": "basementDark",
+      "assetPath": "stages/basement/basementdark",
+      "scroll": [1.1, 1.1]
+    },
+    {
+      "zIndex": 8,
+      "position": [-730, -360],
+      "name": "basementRed",
+      "assetPath": "stages/basement/basementred",
+      "scroll": [1.1, 1.1]
+    },
+    {
+      "zIndex": 7,
+      "position": [-730, -360],
+      "name": "basementLight",
+      "assetPath": "stages/basement/basementlight",
       "scroll": [1.1, 1.1]
     }
   ],

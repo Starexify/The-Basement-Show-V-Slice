@@ -1,0 +1,137 @@
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.data.character.CharacterDataParser;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.play.song.ScriptedSong;
+import funkin.util.Constants;
+import flixel.util.FlxColor;
+
+class Sirokou extends ScriptedSong {
+    var playState(get, never):PlayState;
+
+    function get_playState():PlayState { return PlayState.instance; }
+
+    var darkJerry:BaseCharacter;
+    var darkBF:BaseCharacter;
+    var darkGF:BaseCharacter;
+    var warning:FunkinSprite;
+
+    function new() {
+        super("sirokou");
+    }
+
+    override public function onCreate(event:ScriptEvent):Void {
+        warning = FunkinSprite.create(0, 0, "warningimage");
+        warning.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+        playState.add(warning);
+
+        darkJerry = CharacterDataParser.fetchCharacter("mouse 3 dark");
+        darkJerry.ignoreExclusionPref = [];
+        darkBF = CharacterDataParser.fetchCharacter("bf-tbs dark");
+        darkBF.ignoreExclusionPref = [];
+        darkGF = CharacterDataParser.fetchCharacter("gf-tbs dark");
+        darkGF.ignoreExclusionPref = [];
+    }
+
+    override public function onSongLoaded(event:SongLoadScriptEvent) {
+        PlayState.instance.camHUD.alpha = 0;
+        PlayState.instance.camCutscene.stopFade();
+        PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0, false);
+
+        playState.currentStage.getNamedProp("basementLight").visible = false;
+    }
+
+    override public function onStepHit(event:SongTimeScriptEvent) {
+        switch (event.step) {
+            case 2:
+                FlxTween.tween(warning, {alpha: 0}, 4, {});
+                PlayState.instance.camCutscene.fade(FlxColor.BLACK, 4, true);
+            case 110: FlxTween.tween(playState.camGame, {alpha: 0}, 0.5, {});
+            case 120, 1432: FlxTween.tween(playState.camHUD, {alpha: 1}, 0.5, {});
+            case 128: FlxTween.tween(playState.camGame, {alpha: 1}, 1, {});
+            case 496, 2080:
+                playState.camHUD.alpha = 0;
+                for (char in playState.currentStage.characters) char.visible = false;
+                playState.currentStage.getNamedProp("basement").visible = false;
+                playState.currentStage.getNamedProp("basementLight").visible = false;
+            case 512, 2096:
+                playState.camHUD.alpha = 1;
+                for (char in playState.currentStage.characters) char.visible = true;
+                playState.currentStage.getNamedProp("basementDark").visible = true;
+            case 800, 2352:
+                playState.currentStage.getNamedProp("basementDark").visible = false;
+                playState.currentStage.getNamedProp("basementRed").visible = true;
+            case 1312:
+                playState.currentStage.getNamedProp("basementDark").visible = true;
+                playState.currentStage.getNamedProp("basementRed").visible = false;
+            case 1760:
+                playState.currentStage.getGirlfriend().visible = false;
+                playState.currentStage.getNamedProp("basementDark").visible = false;
+                playState.currentStage.getDad().visible = false;
+            case 1824:
+                playState.currentStage.getDad().visible = true;
+            case 1840:
+                playState.currentStage.getGirlfriend().visible = true;
+                playState.currentStage.getNamedProp("basementLight").visible = true;
+                centerStrum();
+            case 2864:
+                FlxTween.tween(playState.camHUD, {alpha: 1}, 5, {});
+                for (char in playState.currentStage.characters) char.visible = false;
+                playState.currentStage.getNamedProp("basement").visible = false;
+                playState.currentStage.getNamedProp("basementLight").visible = false;
+        }
+
+        if (event.beat > 199 && event.beat <= 325) {
+            if (event.step % 4 == 0) {
+                FlxTween.tween(playState.camHUD, {y: 12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+                FlxTween.tween(playState.camGame.scroll, {y: -12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
+            }
+            if (event.step % 4 == 2) {
+                FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+                FlxTween.tween(playState.camGame.scroll, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
+            }
+        }
+        if (event.beat == 326) {
+            FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+            FlxTween.tween(playState.camGame.scroll, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
+        }
+    }
+
+    override public function onBeatHit(event:SongTimeScriptEvent):Void {
+        switch (event.beat) {
+            case 128:
+                if (darkJerry != null) {
+                    playState.currentStage.remove(playState.currentStage.getDad());
+                    playState.currentStage.addCharacter(darkJerry, CharacterType.DAD);
+                }
+                if (darkBF != null) {
+                    playState.currentStage.remove(playState.currentStage.getBoyfriend());
+                    playState.currentStage.addCharacter(darkBF, CharacterType.BF);
+                }
+                if (darkGF != null) {
+                    playState.currentStage.remove(playState.currentStage.getGirlfriend());
+                    playState.currentStage.addCharacter(darkGF, CharacterType.GF);
+                }
+        }
+    }
+
+    function centerStrum() {
+        for (note in playState.opponentStrumline.strumlineNotes) {
+            FlxTween.tween(note, {x: -1000}, 1.5, {ease: FlxEase.quadInOut});
+            FlxTween.tween(note, {angle: 360}, 1, {ease: FlxEase.quadInOut});
+        }
+
+        for (note in playState.playerStrumline.strumlineNotes) {
+            FlxTween.tween(note, {x: note.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET, angle: 360}, 1, {ease: FlxEase.quadInOut});
+        }
+        FlxTween.tween(playState.opponentStrumline, {x: -1000}, 1, {ease: FlxEase.quadInOut});
+        FlxTween.tween(playState.opponentStrumline.background, {x: -1000}, 1, {ease: FlxEase.quadInOut});
+        FlxTween.tween(playState.playerStrumline, {x: playState.playerStrumline.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET}, 1, {ease: FlxEase.quadInOut });
+        FlxTween.tween(playState.playerStrumline.background, {alpha: 0, x: playState.playerStrumline.background.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET}, 1, {ease: FlxEase.quadInOut });
+    }
+}

@@ -1,0 +1,42 @@
+import funkin.graphics.FunkinSprite;
+import funkin.play.event.ScriptedSongEvent;
+import funkin.play.PlayState;
+
+class DodgeEvent extends ScriptedSongEvent {
+    public static var instance:DodgeEvent;
+
+    var spacebar:FunkinSprite;
+    var dodgeTimer:Float = 1.5;
+    var canDodge:Bool = false;
+    var dodged:Bool = false;
+
+    function new() {
+        super("DodgeEvent");
+        DodgeEvent.instance = this;
+    }
+
+    override public function handleEvent(data:SongEventData) {
+        if (PlayState.instance == null) return;
+        var playState = PlayState.instance;
+        dodgeTimer = 1.5;
+        canDodge = true;
+        dodged = false;
+
+        if (spacebar == null) {
+            spacebar = FunkinSprite.create(0, 0);
+            spacebar.loadSparrow("spacebar");
+            spacebar.animation.addByPrefix("spacebar", "spacebar", 12, true);
+            spacebar.camera = playState.camHUD;
+            spacebar.screenCenter();
+        }
+        playState.currentStage.getDad().playAnimation("hey", true);
+        spacebar.animation.play("spacebar");
+        playState.add(spacebar);
+
+        TBSMain.playSound("DODGE");
+    }
+
+    override public function getTitle():String {
+        return "Dodge Event";
+    }
+}

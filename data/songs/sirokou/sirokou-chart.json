@@ -5,11 +5,137 @@
   },
   "events": [
     {
+      "t": 5647.05882352941,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 4,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 11294.1176470588,
+      "e": "ZoomCamera",
+      "v": {
+        "duration": 16,
+        "ease": "cubeOut",
+        "zoom": 0.9,
+        "mode": "direct"
+      }
+    },
+    {
+      "t": 11294.1176470588,
+      "e": "Cinematic",
+      "v": {
+        "fadeIn": true
+      }
+    },
+    {
       "t": 11183.8235294118,
       "e": "FocusCamera",
       "v": {
 	"char": 1
 }
+    },
+    {
+      "t": 12705.8823529412,
+      "e": "ZoomCamera",
+      "v": {
+        "duration": 16,
+        "ease": "cubeOut",
+        "zoom": 0.8,
+        "mode": "direct"
+      }
+    },
+    {
+      "t": 14117.6470588235,
+      "e": "ZoomCamera",
+      "v": {
+        "duration": 16,
+        "ease": "cubeOut",
+        "zoom": 0.85,
+        "mode": "direct"
+      }
+    },
+    {
+      "t": 16941.1764705882,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 4,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 21882.3529411765,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 21970.5882352941,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 22235.2941176471,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 22323.5294117647,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 22411.7647058824,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 22500,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 22588.2352941176,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 22588.2352941176,
+      "e": "Cinematic",
+      "v": {
+        "fadeIn": false
+      }
+    },
+    {
+      "t": 22588.2352941176,
+      "e": "ZoomCamera",
+      "v": {
+        "duration": 16,
+        "ease": "cubeOut",
+        "zoom": 0.9,
+        "mode": "direct"
+      }
     },
     {
       "t": 22764.7058823529,
@@ -61,11 +187,162 @@
 }
     },
     {
+      "t": 69970.588235294,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70058.8235294117,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70147.0588235293,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70235.294117647,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70279.4117647058,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70323.5294117646,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70367.6470588235,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70411.7647058823,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70455.8823529411,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70499.9999999999,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70544.1176470587,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 70588.2352941176,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "gf",
+        "force": true,
+        "anim": "scared"
+      }
+    },
+    {
+      "t": 70588.2352941176,
+      "e": "CameraFlash",
+      "v": {
+        "alpha": 100,
+        "duration": 1
+      }
+    },
+    {
+      "t": 70720.588235294,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "gf",
+        "force": true,
+        "anim": "scared"
+      }
+    },
+    {
+      "t": 71999.9999999999,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
       "t": 71294.1176470588,
       "e": "FocusCamera",
       "v": {
 	"char": 1
 }
+    },
+    {
+      "t": 75882.3529411764,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 75970.588235294,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 76058.8235294117,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 76147.0588235293,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
     },
     {
       "t": 76941.1764705882,
@@ -75,11 +352,85 @@
 }
     },
     {
+      "t": 81882.3529411764,
+      "e": "CameraFlash",
+      "v": {
+        "alpha": 100,
+        "duration": 1
+      }
+    },
+    {
+      "t": 82588.2352941175,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
       "t": 82588.2352941175,
       "e": "FocusCamera",
       "v": {
 	"char": 1
 }
+    },
+    {
+      "t": 86117.6470588234,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 86117.6470588234,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
+      "t": 86338.2352941175,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 86558.8235294116,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 86823.5294117646,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 87044.1176470587,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 87264.7058823528,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
+    },
+    {
+      "t": 87529.4117647058,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 0.1,
+        "color": "#000000"
+      }
     },
     {
       "t": 88235.294117647,
@@ -89,11 +440,36 @@
 }
     },
     {
+      "t": 91764.7058823529,
+      "e": "CameraFlash",
+      "v": {
+        "duration": 1
+      }
+    },
+    {
       "t": 93176.4705882351,
       "e": "FocusCamera",
       "v": {
 	"char": 1
 }
+    },
+    {
+      "t": 93176.4705882351,
+      "e": "CameraFlash",
+      "v": {
+        "alpha": 100,
+        "duration": 1
+      }
+    },
+    {
+      "t": 96705.882352941,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
+      "t": 101647.058823529,
+      "e": "DodgeEvent",
+      "v": {}
     },
     {
       "t": 104470.588235294,
@@ -110,6 +486,34 @@
 }
     },
     {
+      "t": 115764.705882353,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "gf",
+        "force": true,
+        "anim": "cheer"
+      }
+    },
+    {
+      "t": 115897.058823529,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "gf",
+        "force": true,
+        "anim": "cheer"
+      }
+    },
+    {
+      "t": 117882.352941176,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
+      "t": 123529.411764706,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
       "t": 126352.94117647,
       "e": "FocusCamera",
       "v": {
@@ -124,11 +528,23 @@
 }
     },
     {
+      "t": 127058.823529412,
+      "e": "Cinematic",
+      "v": {
+        "fadeIn": true
+      }
+    },
+    {
       "t": 133411.764705882,
       "e": "FocusCamera",
       "v": {
 	"char": 0
 }
+    },
+    {
+      "t": 141176.470588235,
+      "e": "DodgeEvent",
+      "v": {}
     },
     {
       "t": 142588.235294117,
@@ -143,6 +559,20 @@
       "v": {
 	"char": 0
 }
+    },
+    {
+      "t": 155294.117647059,
+      "e": "Cinematic",
+      "v": {
+        "fadeIn": true
+      }
+    },
+    {
+      "t": 161647.058823529,
+      "e": "Cinematic",
+      "v": {
+        "fadeIn": false
+      }
     },
     {
       "t": 162352.94117647,
@@ -166,6 +596,26 @@
 }
     },
     {
+      "t": 186352.94117647,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
+      "t": 189176.470588235,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
+      "t": 192705.882352941,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
+      "t": 194823.529411764,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
       "t": 196235.294117647,
       "e": "FocusCamera",
       "v": {
@@ -178,6 +628,25 @@
       "v": {
 	"char": 1
 }
+    },
+    {
+      "t": 207661.764705882,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "gf",
+        "force": true,
+        "anim": "scared"
+      }
+    },
+    {
+      "t": 208941.176470588,
+      "e": "DodgeEvent",
+      "v": {}
+    },
+    {
+      "t": 213882.352941176,
+      "e": "DodgeEvent",
+      "v": {}
     },
     {
       "t": 218823.529411765,

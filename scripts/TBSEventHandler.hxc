@@ -1,0 +1,74 @@
+import flixel.FlxG;
+import funkin.FunkinMemory;
+import funkin.modding.events.ScriptEvent.SongLoadScriptEvent;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ScriptedModule;
+import funkin.play.PlayState;
+import Lambda;
+import funkin.util.Constants;
+
+class TBSEventHandler extends ScriptedModule {
+    var playState(get, never):PlayState;
+    function get_playState():PlayState { return PlayState.instance; }
+
+    var dodge(get, never):DodgeEvent;
+    function get_dodge():DodgeEvent { return DodgeEvent.instance; }
+
+    var hasDodgeEvent:Bool = false;
+
+    override public function onSongLoaded(event:SongLoadScriptEvent) {
+        if (playState == null) return;
+
+        hasDodgeEvent = Lambda.exists(playState.currentChart.events, e -> e.eventKind == "DodgeEvent");
+
+        if (hasDodgeEvent) {
+            playState.currentStage.getDad().ignoreExclusionPref = [];
+            playState.currentStage.getBoyfriend().ignoreExclusionPref = [];
+            FunkinMemory.cacheTexture(Paths.image("spacebar"));
+            FunkinMemory.cacheSound(Paths.sound("DODGE"));
+            FunkinMemory.cacheSound(Paths.sound("Dodged"));
+        }
+    }
+
+    override public function onUpdate(event:UpdateScriptEvent) {
+        if (!dodge.canDodge) return;
+
+        dodge.dodgeTimer -= event.elapsed;
+
+        if ((FlxG.keys.justPressed.SPACE || playState.isBotPlayMode) && !dodge.dodged) {
+            onDodged();
+            return;
+        }
+
+        if (dodge.dodgeTimer <= 0 && !dodge.dodged) onDodgeFail();
+    }
+
+    function onDodged() {
+        dodge.dodged = true;
+        dodge.canDodge = false;
+
+        playState.currentStage.getDad().playAnimation("attack", true, true);
+        playState.currentStage.getBoyfriend().playAnimation("dodge", true, true);
+        TBSMain.playSound("Dodged");
+
+        playState.remove(dodge.spacebar);
+    }
+
+    function onDodgeFail() {
+        dodge.canDodge = false;
+
+        playState.currentStage.getDad().playAnimation("attack",true, true);
+        playState.currentStage.getBoyfriend().playAnimation("singRIGHTmiss", true, true);
+        TBSMain.playSound("dead", 0.7);
+        playState.health -= 1.3;
+
+        playState.remove(DodgeEvent.instance.spacebar);
+    }
+
+    override public function onSongEnd(event:ScriptEvent) {
+        hasDodgeEvent = false;
+        if (DodgeEvent.instance.spacebar != null) DodgeEvent.instance.spacebar.destroy();
+        FunkinMemory.purgeSoundCache();
+        FunkinMemory.purgeTextureCache();
+    }
+}

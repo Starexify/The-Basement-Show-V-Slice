@@ -8,14 +8,16 @@ import funkin.play.character.CharacterType;
 import funkin.play.cutscene.CutsceneType;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
 import funkin.play.song.ScriptedSong;
+import funkin.Preferences;
 
 class Evaporate extends ScriptedSong {
-    var warning:FunkinSprite;
-
     var playState(get, never):PlayState;
     function get_playState():PlayState { return PlayState.instance; }
 
+    var hasPlayedCutscene:Bool = false;
+    var warning:FunkinSprite;
     var angryJerry:BaseCharacter;
 
     function new() {
@@ -32,14 +34,21 @@ class Evaporate extends ScriptedSong {
         playState.add(warning);
 
         angryJerry = CharacterDataParser.fetchCharacter("mouse angry");
+        angryJerry.ignoreExclusionPref = [];
     }
 
     override public function onStepHit(event:SongTimeScriptEvent) {
         switch (event.step) {
             case 1: FlxTween.tween(warning, {alpha: 1}, 0.3, {});
             case 48: FlxTween.tween(warning, {alpha: 0}, 0.3, {});
-            case 1016: FlxTween.tween(playState.camHUD, {alpha: 0.5}, 0.5, {});
-            case 1024: FlxTween.tween(playState.camHUD, {alpha: 1}, 0.5, {});
+            case 1016:
+                FlxTween.tween(playState.camHUD, {alpha: 0.5}, 0.5, {});
+                FlxTween.tween(playState.playerStrumline.background, {alpha: 0}, 0.5, {});
+                FlxTween.tween(playState.opponentStrumline.background, {alpha: 0}, 0.5, {});
+            case 1024:
+                FlxTween.tween(playState.camHUD, {alpha: 1}, 0.5, {});
+                FlxTween.tween(playState.playerStrumline.background, {alpha: Preferences.strumlineBackgroundOpacity / 100}, 0.5, {});
+                FlxTween.tween(playState.opponentStrumline.background, {alpha: Preferences.strumlineBackgroundOpacity / 100}, 0.5, {});
         }
 
         if (event.beat > 255 && event.beat <= 381) {
@@ -60,11 +69,24 @@ class Evaporate extends ScriptedSong {
     }
 
     override public function onBeatHit(event:SongTimeScriptEvent) {
-        if (event.beat == 256 && angryJerry != null) {
-            playState.currentStage.remove(playState.currentStage.getDad());
-            playState.currentStage.addCharacter(angryJerry, CharacterType.DAD);
+        switch (event.beat) {
+            case 126, 318: playState.camGame.alpha = 0;
+            case 320: playState.camGame.alpha = 1;
+            case 128: FlxTween.tween(playState.camGame, {alpha: 1}, 0.5, {});
+            case 190: FlxTween.tween(playState.camGame, {alpha: 0}, 0.5, {});
+            case 192: FlxTween.tween(playState.camGame, {alpha: 1}, 1, {});
+            case 256:
+                if (angryJerry != null) {
+                    playState.currentStage.remove(playState.currentStage.getDad());
+                    playState.currentStage.addCharacter(angryJerry, CharacterType.DAD);
+                }
+            case 420:
+                FlxTween.tween(playState.camGame, {alpha: 0}, 0.75, {});
+                FlxTween.tween(playState.camHUD, {alpha: 0}, 0.75, {});
         }
     }
+
+
 
     override public function onSongRetry(event:SongRetryEvent) {
         warning.alpha = 0;
@@ -74,7 +96,11 @@ class Evaporate extends ScriptedSong {
         if (warning != null) warning.destroy();
         warning = null;
 
-        event.cancel();
-        VideoCutscene.play(Paths.videos("Sirokou", CutsceneType.ENDING));
+        if (!PlayStatePlaylist.isStoryMode) return;
+        if (!hasPlayedCutscene) {
+            event.cancel();
+            VideoCutscene.play(Paths.videos("Sirokou"), CutsceneType.ENDING);
+            hasPlayedCutscene = true;
+        }
     }
 }
