@@ -78,14 +78,19 @@ class TBSHud extends ScriptedModule {
     }
 
     override public function onSongStart(event:ScriptEvent) {
+        if (playState == null) return;
+        if (!SONG_LIST.contains(playState.currentSong.id)) return;
+
         songCard = new SongCard(0, 0);
         songCard.camera = FlxG.cameras.list[FlxG.cameras.list.length - 2];
         playState.add(songCard);
     }
 
     override public function onUpdate(event:UpdateScriptEvent) {
-        if (playState == null || tvShader == null) return;
-        tvShader.update(event.elapsed);
+        if (playState == null) return;
+        if (!SONG_LIST.contains(playState.currentSong.id)) return;
+
+        if (tvShader != null) tvShader.update(event.elapsed);
     }
 
     override public function onSongRetry(event:SongRetryEvent) {

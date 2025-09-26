@@ -199,11 +199,11 @@ class TBSPauseMenu extends ScriptedModule {
             else {
                 var text:FlxText = new FlxText(0, 250 + (entryIndex * 62), 0, entry.text);
                 text.setFormat(Paths.font("tbs.ttf"), 36, FlxColor.WHITE, "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
-                text.screenCenter(0x01);
                 text.scrollFactor.set(0, 0);
                 text.alpha = 0;
-                text.updateHitbox();
                 if (entry.text.length > 17) text.scale.set(0.65, 0.65);
+                text.updateHitbox();
+                text.screenCenter(0x01);
 
                 pauseState.menuEntryText.add(text);
 
