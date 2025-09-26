@@ -9,12 +9,16 @@ class KnifeNote extends ScriptedNoteKind {
     var jerry:FunkinSprite;
 
     function new() {
-        super("Knife", "Knife Notes", "knife");
+        super("knife", "Knife Notes", "knife");
         jerry = FunkinSprite.create(0, 0, "JS_Jerry_Wide");
         jerry.alpha = 0;
     }
 
     override public function onNoteHit(event:HitNoteScriptEvent) {
+        event.score = 0;
+        event.doesNotesplash = false;
+        event.judgement = "miss";
+
         TBSMain.playSound("jerry");
         FlxTween.cancelTweensOf(jerry);
         jerry.alpha = 1;

@@ -141,6 +141,23 @@ class TBSPauseMenu extends ScriptedModule {
                 FlxTween.tween(char1, {x: -20}, 0.2, {ease: FlxEase.sineInOut});
                 FlxTween.tween(char2, {x: 319 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
                 FlxTween.tween(char3, {x: 369 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
+            case "evaporate":
+                char1.loadTexture("pause/left");
+                char1.x -= 250;
+                char1.y += 50;
+                char3.loadTexture("pause/right2");
+                FlxTween.tween(char1, {x: -20}, 0.2, {ease: FlxEase.sineInOut});
+                FlxTween.tween(char2, {x: 319 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
+                FlxTween.tween(char3, {x: 369 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
+            case "sirokou":
+                char1.loadTexture("pause/left1");
+                char1.x -= 280;
+                char1.scale.set(0.8, 0.8);
+                char1.y += 120;
+                char3.loadTexture("pause/right2");
+                FlxTween.tween(char1, {x: -40}, 0.2, {ease: FlxEase.sineInOut});
+                FlxTween.tween(char2, {x: 319 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
+                FlxTween.tween(char3, {x: 369 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
         }
 
         state.add(char1);
@@ -148,6 +165,17 @@ class TBSPauseMenu extends ScriptedModule {
         state.add(char2);
         state.add(box);
         state.add(arrow);
+    }
+
+    override public function onStepHit(event:SongTimeScriptEvent) {
+        if (event.step > 1023) {
+            switch (PlayState.instance.currentSong.id) {
+                case "evaporate":
+                    char1.loadTexture("pause/left1");
+                    char1.x -= 60;
+                    char1.y += 70;
+            }
+        }
     }
 
     function clearAndAddMenuEntries(pauseState:PauseSubState) {

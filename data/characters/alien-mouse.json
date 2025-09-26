@@ -1,0 +1,58 @@
+{
+  "version": "1.0.0",
+  "name": "Alien Mouse",
+  "assetPath": "characters/alien",
+  "singTime": 6.1,
+  "scale": 0.9,
+  "healthIcon": {
+    "id": "alien-mouse"
+  },
+  "healthColor": [158, 93, 29],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "alien idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "alien left",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "alien down",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUP",
+      "prefix": "alien up",
+      "offsets": [-10, 0]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "alien right",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT-alt",
+      "prefix": "lalt",
+      "offsets": [247, 28]
+    },
+    {
+      "name": "singDOWN-alt",
+      "prefix": "dalt",
+      "offsets": [138, 24]
+    },
+    {
+      "name": "singUP-alt",
+      "prefix": "ualt",
+      "offsets": [230, 265]
+    },
+    {
+      "name": "singRIGHT-alt",
+      "prefix": "ralt",
+      "offsets": [116, 219]
+    }
+  ]
+}

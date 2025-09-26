@@ -33,6 +33,21 @@ class TBSEventHandler extends ScriptedModule {
         }
     }
 
+    override public function onNoteHit(event:HitNoteScriptEvent) {
+        if (!healthDrainChars.contains(playState.currentStage.getDad().characterId)) return;
+        if (playState.health <= 1) return;
+        if (event.note.noteData.getStrumlineIndex(Strumline.KEY_COUNT) == 0) return;
+
+        if (event.note.isHoldNote) playState.health -= (0.027 / 3);
+        else playState.health -= 0.027;
+    }
+
+    override public function onNoteMiss(event:NoteScriptEvent) {
+        switch (event.note.kind) {
+            case "knife": event.cancel();
+        }
+    }
+
     override public function onUpdate(event:UpdateScriptEvent) {
         if (!dodge.canDodge) return;
 
@@ -81,15 +96,6 @@ class TBSEventHandler extends ScriptedModule {
             dodge.canDodge = true;
             paused = false;
         }
-    }
-
-    override public function onNoteHit(event:HitNoteScriptEvent) {
-        if (!healthDrainChars.contains(playState.currentStage.getDad().characterId)) return;
-        if (playState.health <= 1) return;
-        if (event.note.noteData.getStrumlineIndex(Strumline.KEY_COUNT) == 0) return;
-
-        if (event.note.isHoldNote) playState.health -= (0.027 / 3);
-        else playState.health -= 0.027;
     }
 
     override public function onSongEnd(event:ScriptEvent) {

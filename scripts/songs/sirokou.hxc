@@ -1,4 +1,6 @@
+import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -12,12 +14,17 @@ import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.ScriptedSong;
+import funkin.ui.FullScreenScaleMode;
 import funkin.util.Constants;
+import openfl.filters.ShaderFilter;
 
 class Sirokou extends ScriptedSong {
     var playState(get, never):PlayState;
 
     function get_playState():PlayState { return PlayState.instance; }
+
+    var playerPos:Array<FlxPoint> = [];
+    var opponentPos:Array<FlxPoint> = [];
 
     var jerry:BaseCharacter;
     var bf:BaseCharacter;
@@ -28,12 +35,21 @@ class Sirokou extends ScriptedSong {
     var rtxJerry:BaseCharacter;
     var rtxBF:BaseCharacter;
     var rtxGF:BaseCharacter;
+
     var warning:FunkinSprite;
     var shade:FunkinSprite;
+    var fire:FunkinSprite;
+    var fireGrid:FunkinSprite;
 
     var centeredStrum:Bool = false;
+    var spinStrums:Bool = false;
+    var heatwave:Bool = false;
 
     var hasPlayedCutscene:Bool = false;
+
+    var camList:Array<FlxCamera>;
+    var heatwaveShader:HeatwaveShader;
+    var tvShader:OldTVShader;
 
     function new() {
         super("sirokou");
@@ -61,6 +77,20 @@ class Sirokou extends ScriptedSong {
     }
 
     override public function onSongLoaded(event:SongLoadScriptEvent) {
+        fire = FunkinSprite.create(0, -530);
+        fire.frames = Paths.getSparrowAtlas("stages/fire");
+        fire.animation.addByPrefix("fire", "fire", 24, true);
+        fire.scale.set(2.6 * FullScreenScaleMode.wideScale.x, 4.3);
+        fire.updateHitbox();
+        fire.camera = playState.camHUD;
+        fire.alpha = 0;
+        playState.add(fire);
+
+/*        fireGrid = FunkinSprite.create(0, 0, "fireGrid");
+        fireGrid.camera = playState.camHUD;
+        fireGrid.alpha = 0;
+        playState.add(fireGrid);*/
+
         shade = FunkinSprite.create(0, 0, "shade2");
         shade.camera = playState.camHUD;
         playState.add(shade);
@@ -69,11 +99,28 @@ class Sirokou extends ScriptedSong {
         warning.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
         playState.add(warning);
 
-        PlayState.instance.camHUD.alpha = 0;
-        PlayState.instance.camCutscene.stopFade();
-        PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0);
+        playState.camHUD.alpha = 0;
+        playState.camCutscene.stopFade();
+        playState.camCutscene.fade(FlxColor.BLACK, 0);
 
         playState.currentStage.getNamedProp("basementLight").visible = false;
+
+        // Shader stuff
+        heatwave = false;
+        tvShader = new OldTVShader();
+        heatwaveShader = new HeatwaveShader();
+        tvShader.setFloat("blueOpac", 1.3);
+        tvShader.setFloat("redOpac", 0);
+        heatwaveShader.setFloat("speed", 2);
+        heatwaveShader.setFloat("strength", 0.48);
+
+        camList = [playState.camHUD, playState.camGame];
+        for (cam in camList) cam.filters = [new ShaderFilter(tvShader)];
+    }
+
+    override public function onSongStart(event:ScriptEvent) {
+        for (note in playState.playerStrumline.strumlineNotes) playerPos.push(note.getPosition());
+        for (note in playState.opponentStrumline.strumlineNotes) opponentPos.push(note.getPosition());
     }
 
     override public function onStepHit(event:SongTimeScriptEvent) {
@@ -94,9 +141,23 @@ class Sirokou extends ScriptedSong {
                 for (char in playState.currentStage.characters) char.visible = true;
                 playState.currentStage.getNamedProp("basementDark").visible = true;
             case 800, 2352:
+                heatwave = true;
+                fire.alpha = 0.45;
+                fire.animation.play("fire");
+                tvShader.setFloat("blueOpac", 0);
+                tvShader.setFloat("redOpac", 1.6);
+                for (cam in camList) cam.filters = [new ShaderFilter(tvShader), new ShaderFilter(heatwaveShader)];
+
                 playState.currentStage.getNamedProp("basementDark").visible = false;
                 playState.currentStage.getNamedProp("basementRed").visible = true;
             case 1312:
+                heatwave = false;
+                fire.animation.stop();
+                fire.alpha = 0;
+                tvShader.setFloat("blueOpac", 1.3);
+                tvShader.setFloat("redOpac", 0);
+                for (cam in camList) cam.filters = [new ShaderFilter(tvShader)];
+
                 playState.currentStage.getNamedProp("basementDark").visible = true;
                 playState.currentStage.getNamedProp("basementRed").visible = false;
             case 1760:
@@ -109,6 +170,9 @@ class Sirokou extends ScriptedSong {
                 playState.currentStage.getGirlfriend().visible = true;
                 playState.currentStage.getNamedProp("basementLight").visible = true;
                 centerStrum();
+            case 2640:
+                centeredStrum = false;
+                spinStrums = true;
             case 2864:
                 FlxTween.tween(playState.camHUD, {alpha: 1}, 5, {});
                 for (char in playState.currentStage.characters) char.visible = false;
@@ -132,7 +196,7 @@ class Sirokou extends ScriptedSong {
         }
     }
 
-    override public function onBeatHit(event:SongTimeScriptEvent):Void {
+    override public function onBeatHit(event:SongTimeScriptEvent) {
         switch (event.beat) {
             case 128, 328, 520:
                 if (darkJerry != null) {
@@ -173,19 +237,44 @@ class Sirokou extends ScriptedSong {
                     playState.currentStage.remove(playState.currentStage.getGirlfriend());
                     playState.currentStage.addCharacter(gf, CharacterType.GF);
                 }
+            case 716:
+                VideoCutscene.play(Paths.videos("Lyrics"), CutsceneType.MIDSONG);
         }
     }
 
     override public function onUpdate(event:UpdateScriptEvent) {
-        if (playState == null || !centeredStrum) return;
+        if (playState == null || playState.playerStrumline == null) return;
 
-        for (cover in playState.opponentStrumline.noteHoldCovers) cover.x = -1000;
+        tvShader.update(event.elapsed);
+        if (heatwave) heatwaveShader.update(event.elapsed);
 
-        for (i in 0...playState.playerStrumline.noteHoldCovers) {
-            var note = playState.playerStrumline.strumlineNotes.members[i];
-            var cover = playState.playerStrumline.noteHoldCovers.members[i];
+        if (!centeredStrum) return;
+
+/*        for (cover in playState.opponentStrumline.noteHoldCovers.members) cover.x = -1000;
+
+        for (k in 0...playState.playerStrumline.noteHoldCovers.members.length) {
+            var note = playState.playerStrumline.strumlineNotes.members[k];
+            var cover = playState.playerStrumline.noteHoldCovers.members[k];
             cover.x = note.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET;
+        }*/
+
+        // WHY THE HELL IS THIS NOT WORKING ?
+        //if (!spinStrums) return;
+/*        index = 0;
+        for (note in playState.playerStrumline.strumlineNotes.members) {
+            if (note != null) {
+                note.x = playerPos[index].x + 15 * Math.sin((playState.conductorInUse.songPosition + index * 0.25) * Math.PI);
+                note.y = playerPos[index].y + 30 * Math.cos((playState.conductorInUse.songPosition + index * 0.25) * Math.PI);
+                index++;
+            }
         }
+        index = 0;
+
+        for (j in 0...playState.opponentStrumline.members.length) {
+            var note = playState.opponentStrumline.members[j];
+            note.x = opponentPos[j].x + 15 * Math.sin((playState.conductorInUse.songPosition + j * 0.25) * Math.PI);
+            note.y = opponentPos[j].y + 30 * Math.cos((playState.conductorInUse.songPosition + j * 0.25) * Math.PI);
+        }*/
     }
 
     function centerStrum() {
@@ -205,8 +294,10 @@ class Sirokou extends ScriptedSong {
     }
 
     override public function onSongEnd(event:ScriptEvent) {
+        if (fire != null) fire.destroy();
         if (warning != null) warning.destroy();
-        warning = null;
+        if (tvShader != null) tvShader = null;
+        if (heatwaveShader != null) heatwaveShader = null;
 
         if (!PlayStatePlaylist.isStoryMode) return;
         if (!hasPlayedCutscene) {
