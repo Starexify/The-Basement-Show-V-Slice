@@ -11,6 +11,8 @@ import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 import funkin.play.cutscene.CutsceneType;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.notes.Strumline;
+import funkin.play.notes.StrumlineNote;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.ScriptedSong;
@@ -25,6 +27,8 @@ class Sirokou extends ScriptedSong {
 
     var playerPos:Array<FlxPoint> = [];
     var opponentPos:Array<FlxPoint> = [];
+    var playerStrX:Float;
+    var oppStrX:Float;
 
     var jerry:BaseCharacter;
     var bf:BaseCharacter;
@@ -86,10 +90,10 @@ class Sirokou extends ScriptedSong {
         fire.alpha = 0;
         playState.add(fire);
 
-/*        fireGrid = FunkinSprite.create(0, 0, "fireGrid");
+        fireGrid = FunkinSprite.create(0, 0, "fireGrid");
         fireGrid.camera = playState.camHUD;
         fireGrid.alpha = 0;
-        playState.add(fireGrid);*/
+        playState.add(fireGrid);
 
         shade = FunkinSprite.create(0, 0, "shade2");
         shade.camera = playState.camHUD;
@@ -121,6 +125,8 @@ class Sirokou extends ScriptedSong {
     override public function onSongStart(event:ScriptEvent) {
         for (note in playState.playerStrumline.strumlineNotes) playerPos.push(note.getPosition());
         for (note in playState.opponentStrumline.strumlineNotes) opponentPos.push(note.getPosition());
+        playerStrX = playState.playerStrumline.x;
+        oppStrX = playState.opponentStrumline.x;
     }
 
     override public function onStepHit(event:SongTimeScriptEvent) {
@@ -171,7 +177,8 @@ class Sirokou extends ScriptedSong {
                 playState.currentStage.getNamedProp("basementLight").visible = true;
                 centerStrum();
             case 2640:
-                centeredStrum = false;
+                playState.playerStrumline.x = playerStrX;
+                playState.opponentStrumline.x = oppStrX;
                 spinStrums = true;
             case 2864:
                 FlxTween.tween(playState.camHUD, {alpha: 1}, 5, {});
@@ -248,33 +255,41 @@ class Sirokou extends ScriptedSong {
         tvShader.update(event.elapsed);
         if (heatwave) heatwaveShader.update(event.elapsed);
 
-        if (!centeredStrum) return;
+        if (spinStrums) spinningStrums();
 
-/*        for (cover in playState.opponentStrumline.noteHoldCovers.members) cover.x = -1000;
-
-        for (k in 0...playState.playerStrumline.noteHoldCovers.members.length) {
-            var note = playState.playerStrumline.strumlineNotes.members[k];
-            var cover = playState.playerStrumline.noteHoldCovers.members[k];
-            cover.x = note.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET;
-        }*/
-
-        // WHY THE HELL IS THIS NOT WORKING ?
-        //if (!spinStrums) return;
-/*        index = 0;
-        for (note in playState.playerStrumline.strumlineNotes.members) {
-            if (note != null) {
-                note.x = playerPos[index].x + 15 * Math.sin((playState.conductorInUse.songPosition + index * 0.25) * Math.PI);
-                note.y = playerPos[index].y + 30 * Math.cos((playState.conductorInUse.songPosition + index * 0.25) * Math.PI);
-                index++;
-            }
+        if (centeredStrum) {
+            centerHoldCovers(playState.playerStrumline);
+            centerHoldCovers(playState.opponentStrumline);
         }
-        index = 0;
+    }
 
-        for (j in 0...playState.opponentStrumline.members.length) {
-            var note = playState.opponentStrumline.members[j];
-            note.x = opponentPos[j].x + 15 * Math.sin((playState.conductorInUse.songPosition + j * 0.25) * Math.PI);
-            note.y = opponentPos[j].y + 30 * Math.cos((playState.conductorInUse.songPosition + j * 0.25) * Math.PI);
-        }*/
+    function spinningStrums() {
+        spinStrumline(playState.playerStrumline.strumlineNotes.members, playerPos, (playState.conductorInUse.songPosition / Constants.MS_PER_SEC));
+        spinStrumline(playState.opponentStrumline.strumlineNotes.members, opponentPos, (playState.conductorInUse.songPosition / Constants.MS_PER_SEC));
+    }
+
+    function spinStrumline(strumNotes:Array<StrumlineNote>, originalPositions:Array<FlxPoint>, timeInSeconds:Float) {
+        for (i in 0...strumNotes.length) {
+            var phase:Float = timeInSeconds + i * 0.25;
+            var offsetX:Float = 15 * Math.sin(phase * Math.PI);
+            var offsetY:Float = 30 * Math.cos(phase * Math.PI);
+
+            strumNotes[i].setPosition(originalPositions[i].x + offsetX, originalPositions[i].y + offsetY);
+        }
+    }
+
+    function centerHoldCovers(strumline:Strumline) {
+        for (holdCover in strumline.noteHoldCovers.members) {
+            var noteDirection:Int = holdCover.holdNote.noteDirection;
+            var targetStrum = strumline.strumlineNotes.members[noteDirection];
+            var offsets = strumline.noteStyle.getHoldCoverOffsets();
+
+            // Center the hold cover on the target strum, then apply offsets
+            holdCover.x = targetStrum.x + (targetStrum.width - holdCover.width) * 0.5
+            + offsets[0] * holdCover.scale.x - 12;
+            holdCover.y = targetStrum.y + (targetStrum.height - holdCover.height) * 0.5
+            + offsets[1] * holdCover.scale.y + 48;
+        }
     }
 
     function centerStrum() {

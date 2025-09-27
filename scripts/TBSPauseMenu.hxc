@@ -169,7 +169,7 @@ class TBSPauseMenu extends ScriptedModule {
 
     override public function onStepHit(event:SongTimeScriptEvent) {
         if (event.step > 1023) {
-            switch (PlayState.instance.currentSong.id) {
+            switch (playState?.currentSong?.id) {
                 case "evaporate":
                     char1.loadTexture("pause/left1");
                     char1.x -= 60;

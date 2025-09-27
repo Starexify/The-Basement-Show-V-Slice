@@ -34,6 +34,7 @@ class TBSEventHandler extends ScriptedModule {
     }
 
     override public function onNoteHit(event:HitNoteScriptEvent) {
+        if (playState.currentStage == null) return;
         if (!healthDrainChars.contains(playState.currentStage.getDad().characterId)) return;
         if (playState.health <= 1) return;
         if (event.note.noteData.getStrumlineIndex(Strumline.KEY_COUNT) == 0) return;
