@@ -5,6 +5,11 @@
     {
       "name": "ImVeryBad",
       "role": "Porter"
+    },
+    {
+      "name": "The Basement Show Team",
+      "role": "Original Mod Developers",
+      "url": "https://gamebanana.com/mods/390212"
     }
   ],
   "api_version": "0.7.5",
