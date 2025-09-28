@@ -16,9 +16,12 @@ import funkin.play.notes.StrumlineNote;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.song.ScriptedSong;
+import funkin.Preferences;
 import funkin.ui.FullScreenScaleMode;
 import funkin.util.Constants;
+import funkin.util.GRhythmUtil;
 import openfl.filters.ShaderFilter;
+import flixel.FlxObject;
 
 class Sirokou extends ScriptedSong {
     var playState(get, never):PlayState;
@@ -45,7 +48,6 @@ class Sirokou extends ScriptedSong {
     var fire:FunkinSprite;
     var fireGrid:FunkinSprite;
 
-    var centeredStrum:Bool = false;
     var spinStrums:Bool = false;
     var heatwave:Bool = false;
 
@@ -101,11 +103,11 @@ class Sirokou extends ScriptedSong {
 
         warning = FunkinSprite.create(0, 0, "warningimage");
         warning.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
-        playState.add(warning);
+        //playState.add(warning);
 
-        playState.camHUD.alpha = 0;
-        playState.camCutscene.stopFade();
-        playState.camCutscene.fade(FlxColor.BLACK, 0);
+        //playState.camHUD.alpha = 0;
+        //playState.camCutscene.stopFade();
+        //playState.camCutscene.fade(FlxColor.BLACK, 0);
 
         playState.currentStage.getNamedProp("basementLight").visible = false;
 
@@ -177,11 +179,21 @@ class Sirokou extends ScriptedSong {
                 playState.currentStage.getNamedProp("basementLight").visible = true;
                 centerStrum();
             case 2640:
+                playState.playerStrumline.background.alpha = Preferences.strumlineBackgroundOpacity / 100;
+                playState.opponentStrumline.background.alpha = Preferences.strumlineBackgroundOpacity / 100;
                 playState.playerStrumline.x = playerStrX;
                 playState.opponentStrumline.x = oppStrX;
+                playState.playerStrumline.noteHoldCovers.clear();
+                playState.opponentStrumline.noteHoldCovers.clear();
                 spinStrums = true;
             case 2864:
-                FlxTween.tween(playState.camHUD, {alpha: 1}, 5, {});
+                var perMember;
+                for (member in playState.members) {
+                    perMember = member;
+                    if (perMember != null && (perMember is FlxObject) && perMember.camera == playState.camHUD)
+                        FlxTween.tween(perMember, {alpha: 0}, 5, {});
+                }
+
                 for (char in playState.currentStage.characters) char.visible = false;
                 playState.currentStage.getNamedProp("basement").visible = false;
                 playState.currentStage.getNamedProp("basementLight").visible = false;
@@ -257,19 +269,20 @@ class Sirokou extends ScriptedSong {
 
         if (spinStrums) spinningStrums();
 
-        if (centeredStrum) {
-            centerHoldCovers(playState.playerStrumline);
-            centerHoldCovers(playState.opponentStrumline);
-        }
+        centerHoldCovers(playState.playerStrumline);
+        centerHoldCovers(playState.opponentStrumline);
     }
 
     function spinningStrums() {
         spinStrumline(playState.playerStrumline.strumlineNotes.members, playerPos, (playState.conductorInUse.songPosition / Constants.MS_PER_SEC));
         spinStrumline(playState.opponentStrumline.strumlineNotes.members, opponentPos, (playState.conductorInUse.songPosition / Constants.MS_PER_SEC));
+        spinHoldNotes(playState.playerStrumline, (playState.conductorInUse.songPosition / Constants.MS_PER_SEC));
+        spinHoldNotes(playState.opponentStrumline, (playState.conductorInUse.songPosition / Constants.MS_PER_SEC));
     }
 
     function spinStrumline(strumNotes:Array<StrumlineNote>, originalPositions:Array<FlxPoint>, timeInSeconds:Float) {
         for (i in 0...strumNotes.length) {
+            if (strumNotes == null) continue;
             var phase:Float = timeInSeconds + i * 0.25;
             var offsetX:Float = 15 * Math.sin(phase * Math.PI);
             var offsetY:Float = 30 * Math.cos(phase * Math.PI);
@@ -278,22 +291,43 @@ class Sirokou extends ScriptedSong {
         }
     }
 
+    function spinHoldNotes(strumline:Strumline, timeInSeconds:Float) {
+        for (holdNote in strumline.holdNotes.members) {
+            if (holdNote == null || !holdNote.alive) continue;
+            var noteDirection:Int = holdNote.noteDirection;
+            var strumNote = strumline.strumlineNotes.members[noteDirection];
+            holdNote.x = strumNote.x + (strumNote.width - holdNote.width) * 0.5;
+            if (strumline.conductorInUse.songPosition > holdNote.strumTime && holdNote.hitNote) {
+                if (strumline.isDownscroll) holdNote.y = strumNote.y - holdNote.height + Strumline.STRUMLINE_SIZE / 2;
+                else holdNote.y = strumNote.y + Strumline.STRUMLINE_SIZE / 2;
+            } else {
+                if (strumline.isDownscroll) holdNote.y = strumNote.y + GRhythmUtil.getNoteY(holdNote.strumTime, strumline.scrollSpeed, strumline.isDownscroll, strumline.conductorInUse) - holdNote.height + Strumline.STRUMLINE_SIZE / 2 + holdNote.yOffset;
+                else holdNote.y = strumNote.y + GRhythmUtil.getNoteY(holdNote.strumTime, strumline.scrollSpeed, strumline.isDownscroll, strumline.conductorInUse) + Strumline.STRUMLINE_SIZE / 2 + holdNote.yOffset;
+            }
+        }
+
+        for (note in strumline.notes.members) {
+            if (note == null || !note.alive) continue;
+            note.x = strumline.strumlineNotes.members[note.direction].x;
+        }
+    }
+
     function centerHoldCovers(strumline:Strumline) {
-        for (holdCover in strumline.noteHoldCovers.members) {
-            var noteDirection:Int = holdCover.holdNote.noteDirection;
-            var targetStrum = strumline.strumlineNotes.members[noteDirection];
+        for (holdNote in strumline.holdNotes.members) {
+            var holdCover = holdNote.cover;
+            if (holdCover == null) continue;
+            var strumNote = strumline.strumlineNotes.members[holdNote.noteDirection];
             var offsets = strumline.noteStyle.getHoldCoverOffsets();
 
             // Center the hold cover on the target strum, then apply offsets
-            holdCover.x = targetStrum.x + (targetStrum.width - holdCover.width) * 0.5
+            holdCover.x = strumNote.x + (strumNote.width - holdCover.width) * 0.5
             + offsets[0] * holdCover.scale.x - 12;
-            holdCover.y = targetStrum.y + (targetStrum.height - holdCover.height) * 0.5
+            holdCover.y = strumNote.y + (strumNote.height - holdCover.height) * 0.5
             + offsets[1] * holdCover.scale.y + 48;
         }
     }
 
     function centerStrum() {
-        centeredStrum = true;
         for (note in playState.opponentStrumline.strumlineNotes) {
             FlxTween.tween(note, {x: -1000}, 1.5, {ease: FlxEase.quadInOut});
             FlxTween.tween(note, {angle: 360}, 1, {ease: FlxEase.quadInOut});
@@ -306,6 +340,8 @@ class Sirokou extends ScriptedSong {
         FlxTween.tween(playState.opponentStrumline.background, {x: -1000}, 1, {ease: FlxEase.quadInOut});
         FlxTween.tween(playState.playerStrumline, {x: playState.playerStrumline.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET}, 1, {ease: FlxEase.quadInOut });
         FlxTween.tween(playState.playerStrumline.background, {alpha: 0, x: playState.playerStrumline.background.x - FlxG.width * 0.25 + Constants.STRUMLINE_X_OFFSET}, 1, {ease: FlxEase.quadInOut });
+        playState.playerStrumline.noteHoldCovers.clear();
+        playState.opponentStrumline.noteHoldCovers.clear();
     }
 
     override public function onSongEnd(event:ScriptEvent) {

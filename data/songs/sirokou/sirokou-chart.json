@@ -914,6 +914,69 @@
       "v": {
 	"char": 0
 }
+    },
+    {
+      "t": 253411.764705882,
+      "e": "ImageFlash",
+      "v": {
+        "key": "IF/6",
+        "delay": 99,
+        "camera": "hud"
+      }
+    },
+    {
+      "t": 258352.94117647,
+      "e": "ImageFlash",
+      "v": {
+        "key": "IF/7",
+        "delay": 99,
+        "camera": "hud"
+      }
+    },
+    {
+      "t": 263999.999999999,
+      "e": "ImageFlash",
+      "v": {
+        "key": "IF/8",
+        "delay": 99,
+        "camera": "hud"
+      }
+    },
+    {
+      "t": 269647.058823529,
+      "e": "ImageFlash",
+      "v": {
+        "key": "IF/9",
+        "delay": 99,
+        "camera": "hud"
+      }
+    },
+    {
+      "t": 272470.588235294,
+      "e": "ImageFlash",
+      "v": {
+        "key": "IF/10",
+        "delay": 99,
+        "camera": "hud"
+      }
+    },
+    {
+      "t": 273882.352941176,
+      "e": "ImageFlash",
+      "v": {
+        "key": "IF/11",
+        "delay": 99,
+        "camera": "hud"
+      }
+    },
+    {
+      "t": 275294.117647058,
+      "e": "ImageFlash",
+      "v": {
+        "key": "IF/12",
+        "delay": 99,
+        "camera": "hud"
+      }
     }
   ],
   "notes": {

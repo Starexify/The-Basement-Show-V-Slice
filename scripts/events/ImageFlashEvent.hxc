@@ -8,6 +8,8 @@ import funkin.play.event.ScriptedSongEvent;
 import funkin.play.PlayState;
 
 class ImageFlashEvent extends ScriptedSongEvent {
+    var image:FunkinSprite;
+
     function new() {
         super("ImageFlash");
     }
@@ -19,6 +21,7 @@ class ImageFlashEvent extends ScriptedSongEvent {
         var imgKey = data.getString("key");
         if (imgKey == null) return;
 
+        var camera = data.getString("camera") ?? "cutscene";
         var duration = data.getFloat("duration") ?? 0.3;
         var delay = data.getFloat("delay") ?? 0;
 
@@ -26,16 +29,23 @@ class ImageFlashEvent extends ScriptedSongEvent {
         if (addBg) {
             var blackBg = new FunkinSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
             blackBg.scrollFactor.set(0, 0);
-            blackBg.camera = playState.camCutscene;
+            blackBg.camera = switch (camera) {
+                case "cutscene": playState.camCutscene;
+                case "hud": playState.camHUD;
+            }
             playState.add(blackBg);
 
             FlxTween.tween(blackBg, { alpha: 0 }, duration, { ease: FlxEase.linear, startDelay: delay, onComplete: t -> blackBg.destroy() });
         }
 
-        var image = FunkinSprite.create(0, 0, imgKey);
+        if (image != null) image.destroy();
+        image = FunkinSprite.create(0, 0, imgKey);
         image.screenCenter(0x01);
         image.scrollFactor.set(0, 0);
-        image.camera = playState.camCutscene;
+        image.camera = switch (camera) {
+            case "cutscene": playState.camCutscene;
+            case "hud": playState.camHUD;
+        }
         playState.add(image);
 
         FlxTween.tween(image, { alpha: 0 }, duration, { ease: FlxEase.linear, startDelay: delay, onComplete: t -> image.destroy() });
@@ -72,7 +82,17 @@ class ImageFlashEvent extends ScriptedSongEvent {
                 title: "Add Background",
                 defaultValue: false,
                 type: "bool"
-            }
+            },
+            {
+                name: "camera",
+                title: "Camera",
+                defaultValue: "cutscene",
+                type: "enum",
+                keys: [
+                "cutscene" => "cutscene",
+                "hud" => "hud"
+                ]
+            },
         ];
     }
 
