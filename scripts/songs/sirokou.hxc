@@ -1,10 +1,12 @@
 import flixel.FlxCamera;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import funkin.data.character.CharacterDataParser;
+import funkin.FunkinMemory;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.events.ScriptEvent;
 import funkin.play.character.BaseCharacter;
@@ -21,7 +23,6 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.util.Constants;
 import funkin.util.GRhythmUtil;
 import openfl.filters.ShaderFilter;
-import flixel.FlxObject;
 
 class Sirokou extends ScriptedSong {
     var playState(get, never):PlayState;
@@ -45,6 +46,8 @@ class Sirokou extends ScriptedSong {
 
     var warning:FunkinSprite;
     var shade:FunkinSprite;
+
+    var particles:FlameParticles;
     var fire:FunkinSprite;
     var fireGrid:FunkinSprite;
 
@@ -62,6 +65,7 @@ class Sirokou extends ScriptedSong {
     }
 
     override public function onCreate(event:ScriptEvent) {
+        FunkinMemory.cacheTexture(Paths.image("stages/particle"));
         jerry = CharacterDataParser.fetchCharacter("mouse 3");
         jerry.ignoreExclusionPref = [];
         bf = playState.currentStage.getBoyfriend();
@@ -80,6 +84,10 @@ class Sirokou extends ScriptedSong {
         rtxBF.ignoreExclusionPref = [];
         rtxGF = CharacterDataParser.fetchCharacter("gf-tbs rtx");
         rtxGF.ignoreExclusionPref = [];
+
+        particles = new FlameParticles(0, 0, 100);
+        particles.camera = playState.camHUD;
+        playState.add(particles);
     }
 
     override public function onSongLoaded(event:SongLoadScriptEvent) {
@@ -103,11 +111,11 @@ class Sirokou extends ScriptedSong {
 
         warning = FunkinSprite.create(0, 0, "warningimage");
         warning.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
-        //playState.add(warning);
+        playState.add(warning);
 
-        //playState.camHUD.alpha = 0;
-        //playState.camCutscene.stopFade();
-        //playState.camCutscene.fade(FlxColor.BLACK, 0);
+        playState.camHUD.alpha = 0;
+        playState.camCutscene.stopFade();
+        playState.camCutscene.fade(FlxColor.BLACK, 0);
 
         playState.currentStage.getNamedProp("basementLight").visible = false;
 
@@ -198,6 +206,8 @@ class Sirokou extends ScriptedSong {
                 playState.currentStage.getNamedProp("basement").visible = false;
                 playState.currentStage.getNamedProp("basementLight").visible = false;
         }
+
+        if (event.step % 1 == 0 && heatwave) particles.spawnParticle();
 
         if (event.beat > 199 && event.beat <= 325) {
             if (event.step % 4 == 0) {

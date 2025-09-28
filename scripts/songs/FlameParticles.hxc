@@ -1,0 +1,49 @@
+import funkin.modding.base.ScriptedFlxSpriteGroup;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.graphics.FunkinSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+class FlameParticles extends ScriptedFlxSpriteGroup {
+    var cleanupTimer:FlxTimer;
+
+    var spawnY:Float;
+    var velocityYRange:Array<Float> = [-500, -300];
+    var velocityXRange:Array<Float> = [-100, 100];
+    var angleRange:Array<Float> = [-40, 40];
+    var particleColor:Int = 0xFF9763;
+
+    public function new(?x:Float, ?y:Float, ?maxSize:Int) {
+        super(x, y, maxSize);
+
+        spawnY = FlxG.height + 25;
+        cleanupTimer = new FlxTimer().start(1, onCleanupTimer, 0);
+    }
+
+    public function spawnParticle() {
+        if (members.length >= maxSize) return;
+
+        var particle = FunkinSprite.create(FlxG.random.int(0, FlxG.width), spawnY, "stages/particle");
+        particle.velocity.y = FlxG.random.float(velocityYRange[0], velocityYRange[1]);
+        particle.velocity.x = FlxG.random.float(velocityXRange[0], velocityXRange[1]);
+        particle.alpha = 1;
+        particle.angle = FlxG.random.float(angleRange[0], angleRange[1]);
+        particle.color = particleColor;
+        add(particle);
+
+        FlxTween.tween(particle, {alpha: 0}, 2, {
+            ease: FlxEase.linear, onComplete: tween -> removeParticle(particle)
+        });
+    }
+
+    function onCleanupTimer(timer:FlxTimer) {
+        forEachAlive(particle -> {
+            if (particle.alpha <= 0.01 || particle.y < -200 || particle.y > FlxG.height + 200) removeParticle(particle);
+        });
+    }
+
+    function removeParticle(particle:FunkinSprite) {
+        if (members.contains(particle)) remove(particle, true);
+    }
+}
