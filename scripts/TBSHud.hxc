@@ -1,3 +1,4 @@
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import funkin.FunkinMemory;
@@ -12,6 +13,7 @@ class TBSHud extends ScriptedModule {
     public static var SONG_LIST:Array<String> = ["house-for-sale", "evaporate", "sirokou"];
 
     var playState(get, never):PlayState;
+
     function get_playState():PlayState { return PlayState.instance; }
 
     var bfHealthColor:Array<Int>;
@@ -21,6 +23,14 @@ class TBSHud extends ScriptedModule {
     var analog:FunkinSprite;
 
     var songCard:SongCard;
+
+    public static var camOther:FlxCamera;
+
+    public function new() {
+        super("TBSHud");
+        TBSHud.camOther = new FlxCamera();
+        TBSHud.camOther.bgColor = FlxColor.TRANSPARENT;
+    }
 
     override public function onCreate(event:ScriptEvent) {
         FunkinMemory.cacheTexture(Paths.image("healthbarTBS"));
@@ -36,6 +46,8 @@ class TBSHud extends ScriptedModule {
         }
 
         WindowUtil.setWindowTitle("The Basement Show - Now Playing: " + playState.currentSong.songName + " - By: " + playState.currentSong.songArtist);
+
+        FlxG.cameras.insert(TBSHud.camOther, FlxG.cameras.list.indexOf(playState.camHUD) + 1, false);
 
         // Changed Health Bar texture and stuff
         playState.healthBarBG.loadTexture("healthbarTBS");
@@ -82,7 +94,7 @@ class TBSHud extends ScriptedModule {
         if (!SONG_LIST.contains(playState.currentSong.id)) return;
 
         songCard = new SongCard(0, 0);
-        songCard.camera = FlxG.cameras.list[FlxG.cameras.list.length - 2];
+        songCard.camera = FlxG.cameras.list[FlxG.cameras.list.length - 3];
         playState.add(songCard);
     }
 

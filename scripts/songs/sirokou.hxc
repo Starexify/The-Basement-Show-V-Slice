@@ -4,7 +4,6 @@ import flixel.FlxObject;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxColor;
 import funkin.data.character.CharacterDataParser;
 import funkin.FunkinMemory;
 import funkin.graphics.FunkinSprite;
@@ -109,13 +108,13 @@ class Sirokou extends ScriptedSong {
         shade.camera = playState.camHUD;
         playState.add(shade);
 
+        trace();
         warning = FunkinSprite.create(0, 0, "warningimage");
-        warning.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
-        //playState.add(warning);
+        warning.camera = TBSHud.camOther;
+        warning.screenCenter();
+        playState.add(warning);
 
-        //playState.camHUD.alpha = 0;
-        playState.camCutscene.stopFade();
-        //playState.camCutscene.fade(FlxColor.BLACK, 0);
+        playState.camHUD.alpha = 0;
 
         playState.currentStage.getNamedProp("basementLight").visible = false;
 
@@ -141,9 +140,7 @@ class Sirokou extends ScriptedSong {
 
     override public function onStepHit(event:SongTimeScriptEvent) {
         switch (event.step) {
-            case 2:
-                FlxTween.tween(warning, {alpha: 0}, 4, {});
-                PlayState.instance.camCutscene.fade(FlxColor.BLACK, 4, true);
+            case 2: FlxTween.tween(warning, {alpha: 0}, 4, {});
             case 110: FlxTween.tween(playState.camGame, {alpha: 0}, 0.5, {});
             case 120, 1432: FlxTween.tween(playState.camHUD, {alpha: 1}, 0.5, {});
             case 128: FlxTween.tween(playState.camGame, {alpha: 1}, 1, {});

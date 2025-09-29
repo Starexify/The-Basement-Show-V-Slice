@@ -22,7 +22,7 @@ class CameraFlashEvent extends ScriptedSongEvent {
         var overlay = new FlxSprite();
         overlay.makeGraphic(FlxG.width, FlxG.height, FlxColor.fromString("0xFF" + color));
         overlay.scrollFactor.set(0, 0);
-        overlay.camera = PlayState.instance.camHUD.alpha > 0 ? PlayState.instance.camHUD : PlayState.instance.camCutscene;
+        overlay.camera = PlayState.instance.camHUD.alpha > 0 ? PlayState.instance.camHUD : TBSHud.camOther;
         overlay.alpha = alpha / 100;
         PlayState.instance.add(overlay);
 
