@@ -111,11 +111,11 @@ class Sirokou extends ScriptedSong {
 
         warning = FunkinSprite.create(0, 0, "warningimage");
         warning.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
-        playState.add(warning);
+        //playState.add(warning);
 
-        playState.camHUD.alpha = 0;
+        //playState.camHUD.alpha = 0;
         playState.camCutscene.stopFade();
-        playState.camCutscene.fade(FlxColor.BLACK, 0);
+        //playState.camCutscene.fade(FlxColor.BLACK, 0);
 
         playState.currentStage.getNamedProp("basementLight").visible = false;
 
@@ -211,15 +211,21 @@ class Sirokou extends ScriptedSong {
 
         if (event.beat > 199 && event.beat <= 325) {
             if (event.step % 4 == 0) {
-                FlxTween.tween(playState.camHUD, {y: 12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
-                FlxTween.tween(playState.camGame.scroll, {y: -12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
+                FlxTween.cancelTweensOf(playState.camHUD);
+                FlxTween.cancelTweensOf(playState.camGame.scroll);
+                FlxTween.tween(playState.camHUD, {y: -12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+                FlxTween.tween(playState.camGame.scroll, {y: 12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
             }
             if (event.step % 4 == 2) {
-                FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+                FlxTween.cancelTweensOf(playState.camHUD);
+                FlxTween.cancelTweensOf(playState.camGame.scroll);
+                FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
                 FlxTween.tween(playState.camGame.scroll, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
             }
         }
         if (event.beat == 326) {
+            FlxTween.cancelTweensOf(playState.camHUD);
+            FlxTween.cancelTweensOf(playState.camGame.scroll);
             FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
             FlxTween.tween(playState.camGame.scroll, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
         }

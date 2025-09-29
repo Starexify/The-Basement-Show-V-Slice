@@ -16,6 +16,8 @@ import funkin.play.PauseSubState;
 import funkin.play.PlayState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.options.OptionsState;
+import funkin.util.FileUtilSandboxed;
+import funkin.util.ReflectUtil;
 import haxe.Timer;
 import haxe.ui.util.MathUtil;
 
@@ -32,12 +34,18 @@ class TBSPauseMenu extends ScriptedModule {
     var bg:FunkinSprite;
     var box:FunkinSprite;
     var arrow:FunkinSprite;
-    var char1:FunkinSprite;
-    var char2:FunkinSprite;
-    var char3:FunkinSprite;
+    var characters:Array<FunkinSprite> = [];
+    var charNames = ["char1", "char3", "char2"];
+    var charIndices = [0, 2, 1];
 
     var timeText:FlxText;
     var boxGrowProgress:Float = 0;
+
+    var pauseConfig:PauseConfig;
+
+    override public function onSongLoaded(event:SongLoadScriptEvent) {
+        pauseConfig = FileUtilSandboxed.readJSONFromPath(Assets.getPath(Paths.json("pauseChars")));
+    }
 
     override public function onUpdate(event:UpdateScriptEvent) {
         if (playState == null || !TBSHud.SONG_LIST.contains(playState.currentSong.id)) return;
@@ -84,6 +92,7 @@ class TBSPauseMenu extends ScriptedModule {
         boxGrowProgress = 0;
         startPauseMusic(pauseState);
         buildBackground(pauseState);
+        buildCharacters(pauseState);
         clearAndAddMenuEntries(pauseState);
         pauseState.menuEntryText.zIndex = 100;
         pauseState.metadata.forEach(text -> text.font = Paths.font("TBS.ttf"));
@@ -91,8 +100,11 @@ class TBSPauseMenu extends ScriptedModule {
         pauseState.refresh();
 
         TBSMain.playSound("scrollMenuTBS");
-
         FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
+    }
+
+    override public function onSubStateCloseEnd(event:SubStateScriptEvent) {
+        if (event.targetState is PauseSubState) destroyPauseAssets();
     }
 
     function buildBackground(state:PauseSubState) {
@@ -116,65 +128,54 @@ class TBSPauseMenu extends ScriptedModule {
         arrow.alpha = 0;
         arrow.scale.set(0.07, 0.07);
 
-        char1 = new FunkinSprite();
-        char1.alpha = 0;
-
-        char2 = FunkinSprite.create(519, -55, "pause/right");
-        char2.alpha = 0;
-        char2.scale.set(0.5, 0.5);
-
-        char3 = new FunkinSprite(569, -245);
-        char3.alpha = 0;
-        char3.scale.set(0.5, 0.5);
-
-        FlxTween.tween(char1, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
-        FlxTween.tween(char2, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
-        FlxTween.tween(char3, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
-        FlxTween.tween(arrow, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
-
-        switch (PlayState.instance.currentSong.id) {
-            case "house-for-sale":
-                char1.loadTexture("pause/left");
-                char1.x -= 220;
-                char1.y += 50;
-                char3.loadTexture("pause/right2");
-                FlxTween.tween(char1, {x: -20}, 0.2, {ease: FlxEase.sineInOut});
-                FlxTween.tween(char2, {x: 319 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
-                FlxTween.tween(char3, {x: 369 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
-            case "evaporate":
-                char1.loadTexture("pause/left");
-                char1.x -= 250;
-                char1.y += 50;
-                char3.loadTexture("pause/right2");
-                FlxTween.tween(char1, {x: -20}, 0.2, {ease: FlxEase.sineInOut});
-                FlxTween.tween(char2, {x: 319 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
-                FlxTween.tween(char3, {x: 369 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
-            case "sirokou":
-                char1.loadTexture("pause/left1");
-                char1.x -= 280;
-                char1.scale.set(0.8, 0.8);
-                char1.y += 120;
-                char3.loadTexture("pause/right2");
-                FlxTween.tween(char1, {x: -40}, 0.2, {ease: FlxEase.sineInOut});
-                FlxTween.tween(char2, {x: 319 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
-                FlxTween.tween(char3, {x: 369 + FullScreenScaleMode.gameCutoutSize.x}, 0.2, {ease: FlxEase.sineInOut});
-        }
-
-        state.add(char1);
-        state.add(char3);
-        state.add(char2);
         state.add(box);
         state.add(arrow);
+
+        FlxTween.tween(arrow, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
     }
 
-    override public function onStepHit(event:SongTimeScriptEvent) {
-        if (event.step > 1023) {
-            switch (playState?.currentSong?.id) {
-                case "evaporate":
-                    char1.loadTexture("pause/left1");
-                    char1.x -= 60;
-                    char1.y += 70;
-            }
+    function buildCharacters(state:PauseSubState) {
+        if (pauseConfig == null) return;
+
+        var songConfig = ReflectUtil.field(pauseConfig.songs, playState.currentSong.id);
+        if (songConfig == null) return;
+
+        characters = [null, null, null];
+
+        for (i in 0...charNames.length) {
+            var charIndex = charIndices[i];
+            var charConfig = ReflectUtil.field(songConfig, charNames[i]);
+            if (charConfig == null) continue;
+
+            var char = FunkinSprite.create(0, 0, charConfig.texture);
+            char.alpha = 0;
+
+            char.scale.set(charConfig.scale[0], charConfig.scale[1]);
+
+            var startOffset = charConfig.startOffset;
+            var targetPos = charConfig.targetPosition;
+
+            var cutoutOffsetX = FullScreenScaleMode.gameCutoutSize.x;
+            if (i > 0) targetPos = [targetPos[0] + cutoutOffsetX, targetPos[1]];
+
+            char.setPosition(targetPos[0] + startOffset[0], targetPos[1] + startOffset[1]);
+
+            characters[charIndex] = char;
+            state.add(char);
+
+            FlxTween.tween(char, {alpha: 1}, 0.4, {ease: FlxEase.sineInOut});
+
+            var duration = charConfig.tweenDuration != null ? charConfig.tweenDuration : 0.2;
+            FlxTween.tween(char, {x: targetPos[0], y: targetPos[1]}, duration, {ease: FlxEase.sineInOut});
+
+/*            if (charConfig.stepChanges == null) continue;
+            var stepChange = ReflectUtil.field(charConfig.stepChanges, Std.string(playState.conductorInUse.currentStep));
+            if (stepChange == null) continue;
+            if (stepChange.texture != null) char.loadTexture(stepChange.texture);
+            if (stepChange.offsetChange != null) {
+                char.x += stepChange.offsetChange[0];
+                char.y += stepChange.offsetChange[1];
+            }*/
         }
     }
 
@@ -228,5 +229,38 @@ class TBSPauseMenu extends ScriptedModule {
         pauseState.pauseMusic = FunkinSound.load(Paths.music("pauseTBS"), true, true);
         pauseState.pauseMusic.play(false, FlxG.random.int(0, Std.int(pauseState.pauseMusic.length / 2)));
         pauseState.pauseMusic.fadeIn(PauseSubState.MUSIC_FADE_IN_TIME, 0, PauseSubState.MUSIC_FINAL_VOLUME);
+    }
+
+    function destroyPauseAssets() {
+        if (bg != null) {
+            FlxTween.cancelTweensOf(bg);
+            bg = null;
+        }
+
+        if (box != null) {
+            FlxTween.cancelTweensOf(box);
+            box = null;
+        }
+
+        if (arrow != null) {
+            FlxTween.cancelTweensOf(arrow);
+            arrow = null;
+        }
+
+        if (timeText != null) {
+            timeText = null;
+        }
+
+        if (characters != null) {
+            for (char in characters) {
+                if (char != null) {
+                    FlxTween.cancelTweensOf(char);
+                    // char.destroy(); // Don't destroy - the state will handle it
+                }
+            }
+            characters = [];
+        }
+
+        boxGrowProgress = 0;
     }
 }

@@ -53,11 +53,11 @@ class Evaporate extends ScriptedSong {
 
         if (event.beat > 255 && event.beat <= 381) {
             if (event.step % 4 == 0) {
-                FlxTween.tween(playState.camHUD, {y: 12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
-                FlxTween.tween(playState.camGame.scroll, {y: -12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
+                FlxTween.tween(playState.camHUD, {y: -12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+                FlxTween.tween(playState.camGame.scroll, {y: 12}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
             }
             if (event.step % 4 == 2) {
-                FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.circOut });
+                FlxTween.tween(playState.camHUD, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
                 FlxTween.tween(playState.camGame.scroll, {y: 0}, playState.conductorInUse.stepLengthMs * 0.002, { ease: FlxEase.sineIn });
             }
         }
